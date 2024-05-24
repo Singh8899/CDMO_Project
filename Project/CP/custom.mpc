@@ -1,0 +1,7 @@
+{
+    "intermediate-solutions": true,
+    "output-objective": true,
+    "random-seed": "1",
+    "solver": "org.gecode.gecode@6.3.0",
+    "solver-statistics": true
+}
