@@ -82,12 +82,9 @@ def main():
     parent_directory = os.path.dirname(current_directory)
     solvers = ["gecode"]
     #Solve for every instance
-    path_mip_res="Res/"
     for instance_number in range(1,n_instances+1):
         #now for every configuration
-        json_final = {}
         for model_config in configurations:
-
             json_solver = {}
             for solver in solvers:
                 #model=mzn.Model("Solvers/implied.mzn")
@@ -102,7 +99,6 @@ def main():
 
             json_solver[solver+"_"+model_config] =json_instance
 
-        #json_final[] = json_solver
         with open(parent_directory+"/res/CP/" + str(instance_number) +".json", 'w') as file:
             json.dump(json_solver, file, indent=4)
 

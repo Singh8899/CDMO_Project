@@ -73,12 +73,12 @@ def format_and_store(x,origin,n_couriers,time,optimal,obj,instance):
 
     json_dict = {}
     key_dict="solvername"
-    json_dict[key_dict] = {"time": time, "optimal": optimal=="Optimal", "obj": int(obj), "sol": str(res)}
+    json_dict[key_dict] = {"time": time, "optimal": optimal, "obj": int(obj), "sol": str(res)}
     # Define the file name and path
     file_name = f"{instance}.json"
     print(json_dict)
     # Save the dictionary to a JSON file
     with open(parent_directory+"/res/MIP/" + file_name, 'w') as file:
-            json.dump(json_dict, file, indent=4)
+            json.dump(json_dict, file, indent=3)
     
     print(f"File saved at {parent_directory+"/res/MIP/" + file_name}")
