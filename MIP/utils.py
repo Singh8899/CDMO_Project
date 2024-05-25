@@ -65,24 +65,20 @@ def pathFormatter(x,origin, n_couriers):
 def format_and_store(x,origin,n_couriers,time,optimal,obj,instance):
     res = pathFormatter(x,origin, n_couriers)
     # Get the directory of the current script
+    current_directory = os.getcwd()
+    parent_directory = os.path.dirname(current_directory)
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Define the path to the solutions directory
-    path = os.path.join(script_dir, "Solutions")
-    
-    # Create the directory if it doesn't exist
-    if not os.path.exists(path):
-        os.makedirs(path)
+
 
     json_dict = {}
     key_dict="solvername"
-    json_dict[key_dict] = {"time": time, "optimal": optimal, "obj": obj, "sol": res}
+    json_dict[key_dict] = {"time": time, "optimal": optimal=="Optimal", "obj": int(obj), "sol": str(res)}
     # Define the file name and path
-    file_name = f"{instance}_solution_{key_dict}.json"
-    file_path = os.path.join(path, file_name)
+    file_name = f"{instance}.json"
     print(json_dict)
     # Save the dictionary to a JSON file
-    with open(file_path, 'w') as json_file:
-        json.dump(json_dict, json_file)
+    with open(parent_directory+"/res/MIP/" + file_name, 'w') as file:
+            json.dump(json_dict, file, indent=4)
     
-    print(f"File saved at {file_path}")
+    print(f"File saved at {parent_directory+"/res/MIP/" + file_name}")

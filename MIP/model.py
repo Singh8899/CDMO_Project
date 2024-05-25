@@ -4,7 +4,7 @@ from utils import *
 
 
 def main():
-    instance = 11
+    instance = 1
     n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
     n_cities=D.shape[0]-1
     origin=n_cities+1
