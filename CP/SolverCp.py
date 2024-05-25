@@ -23,7 +23,7 @@ def get_model(model_config):
      return model
 
 def solve_CP(instance_number, model, solver):
-    time_limit=300
+    time_limit=1
     if instance_number >= 10:
         model.add_file("Instances/inst" + str(instance_number) + ".dzn")
     else:
