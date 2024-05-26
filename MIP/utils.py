@@ -44,26 +44,26 @@ def routePlot(paths,D):
     plt.grid(True)
     plt.show()    
 
-def pathFormatter(x,origin, n_couriers):
+def pathFormatter(x,n_cities, n_couriers):
     sol=[]
-    for c in range(1,n_couriers+1):
+    for c in range(n_couriers):
         solution_courier=[]
-        num_assigned_to_courier =len([1 for i in range(1,origin+1) for j in range(1,origin+1) if value(x[i][j][c])==1])
-        for i in range(1,origin):
-            if value(x[origin][i][c])==1:
-                solution_courier.append(i)
+        num_assigned_to_courier =len([1 for i in range(n_cities) for j in range(n_cities) if value(x[i][j][c])==1])
+        for i in range(n_cities-1):
+            if value(x[n_cities-1][i][c])==1:
+                solution_courier.append(i+1)
                 city = i
                 break
         for j in range(num_assigned_to_courier):
-            for i in range(1,origin):
+            for i in range(n_cities-1):
                 if value(x[city][i][c])==1:
-                    solution_courier.append(i)
+                    solution_courier.append(i+1)
                     city = i
         sol.append(solution_courier)
     return sol
 
-def format_and_store(x,origin,n_couriers,time,optimal,obj,instance):
-    res = pathFormatter(x,origin, n_couriers)
+def format_and_store(x,n_cities,n_couriers,time,optimal,obj,instance):
+    res = pathFormatter(x,n_cities, n_couriers)
     # Get the directory of the current script
     current_directory = os.getcwd()
     parent_directory = os.path.dirname(current_directory)

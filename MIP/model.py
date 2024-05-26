@@ -6,17 +6,17 @@ from math import floor
 
 
 def main():
-    instance = 7
+    instance = 1
     n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
 
-    m_TSP,x,origin = set_const(n_couriers, n_items, courier_capacity,item_size, D)
+    m_TSP,x = set_const(n_couriers, n_items, courier_capacity,item_size, D)
     
     time_limit = 30
     solver = PULP_CBC_CMD(msg=False, timeLimit=time_limit)
     m_TSP.solve(solver)
     solve_time = floor(m_TSP.solutionTime)
     opt = (time_limit > solve_time)
-    format_and_store(x,origin,n_couriers,solve_time,opt,value(m_TSP.objective),instance)
+    format_and_store(x,n_items+1,n_couriers,solve_time,opt,value(m_TSP.objective),instance)
 
 def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     m_TSP = LpProblem("Minimize_m_TSP",LpMinimize)
@@ -26,15 +26,14 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     n_obj = n_items // n_couriers + 1
     min_dist = max([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
     max_dist = sum([D[i,i+1] for i in range(0,n_obj+1)]) + min_dist
-    #rows_max = [max(row) for row in D]  # List to store the sums of maximum values in each row
     low_cour = min([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
 
     #We define a 3d matrix of variables x[i][j][c] means that courier c has used node (i,j) to leave city i and reach city j
-    x = LpVariable.dicts("x", (range(1,origin+1), range(1,origin+1), range(1,n_couriers+1)), cat="Binary")
-    u = LpVariable.dicts("u", (range(1,n_cities+1), range(1,n_couriers+1)), lowBound=0, upBound=origin-1, cat="Integer")
+    x = LpVariable.dicts("x", (range(origin), range(origin), range(n_couriers)), cat="Binary")
+    u = LpVariable.dicts("u", (range(n_cities), range(n_couriers)), lowBound=0, upBound=origin-1, cat="Integer")
     maximum = LpVariable("max_dist",lowBound=min_dist, upBound=max_dist, cat="Integer")
-    weigths = [LpVariable(name=f'weigth_{i}', lowBound=0, upBound=courier_capacity[i-1], cat="Integer")
-                   for i in range(1,n_couriers+1)]
+    weigths = [LpVariable(name=f'weigth_{i}', lowBound=0, upBound=courier_capacity[i], cat="Integer")
+                   for i in range(n_couriers)]
     cour_dist = [
             LpVariable(name=f'obj_dist{i}', cat="Integer", lowBound=low_cour, upBound=max_dist)
             for i in range(n_couriers)]
@@ -42,57 +41,61 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     m_TSP +=  maximum
 
     # Set the weight carried by each courier
-    for k in range(1,n_couriers+1):
-            m_TSP += weigths[k-1] == LpAffineExpression([
-                (x[i][j][k], item_size[j-1])
-                for i in range(1,n_items+1)
-                for j in range(1,n_items+1)])
+    for k in range(n_couriers):
+            m_TSP += weigths[k] == LpAffineExpression([
+                (x[i][j][k], item_size[j])
+                for i in range(n_items)
+                for j in range(n_items)])
             
     # Ensure that we dont use useless arcs 
-    m_TSP += lpSum(x[i][i][c] for i in range(1,origin+1) for c in range(1,n_couriers+1)) == 0
+    m_TSP += lpSum(x[i][i][c] for i in range(origin) for c in range(n_couriers)) == 0
 
     # Ensure that every city is reached by one and only one courier
-    for j in range(1,n_cities+1) :
-        m_TSP += lpSum(x[i][j][c] for i in range(1,origin+1) for c in range(1,n_couriers+1)) == 1
+    for j in range(n_cities) :
+        m_TSP += lpSum(x[i][j][c] for i in range(origin) for c in range(n_couriers)) == 1
 
     # Ensure that every courier leaves the depot 
-    for c in range(1,n_couriers+1) :
-        m_TSP += lpSum(x[origin][j][c] for j in range(1,origin)) == 1
+    for c in range(n_couriers) :
+        m_TSP += lpSum(x[n_cities][j][c] for j in range(n_cities)) == 1
 
     # Ensure that every courier reach again the depot
-        for c in range(1,n_couriers+1) :
-            m_TSP += lpSum(x[i][origin][c] for i in range(1,origin)) == 1
+        for c in range(n_couriers) :
+            m_TSP += lpSum(x[i][n_cities][c] for i in range(n_cities)) == 1
 
     # Ensure that each courier doesnt exceed its max capacity
     # for c in range(1,n_couriers+1) :
     #     m_TSP += lpSum(x[i][j][c]*item_size[j-1] for i in range(1,origin+1) for j in range(1,n_cities+1)) <= courier_capacity[c-1]
         
-    # Ensure that each courier path it's connected
-    for j in range(1,origin+1):
-        for c in range(1,n_couriers+1):
-            m_TSP += lpSum(x[i][j][c] for i in range(1,origin+1) ) ==   lpSum(x[j][i][c] for i in range(1,origin+1) )
 
-    for c in range(1,n_couriers+1):
-        for i in range(1,n_cities+1):
-            for j in range(1,n_cities+1):
+
+
+
+    # Ensure that each courier path it's connected
+    for j in range(origin):
+        for c in range(n_couriers):
+            m_TSP += lpSum(x[i][j][c] for i in range(origin) ) ==   lpSum(x[j][i][c] for i in range(origin) )
+
+    for c in range(n_couriers):
+        for i in range(n_cities):
+            for j in range(n_cities):
                 m_TSP += (x[i][j][c]   + x[j][i][c])  <=1
 
-    for j in range(1,origin):
-        m_TSP += lpSum(x[i][j][c] for i in range(1,origin+1) for c in range(1,n_couriers+1)) ==1
+    for j in range(n_couriers):
+        m_TSP += lpSum(x[i][j][c] for i in range(origin) for c in range(n_couriers)) ==1
 
-    for k in range(1,n_couriers+1):
-        for i in range(1, n_cities+1):
-            for j in range(1, n_cities+1):
+    for k in range(n_couriers):
+        for i in range(n_cities):
+            for j in range(n_cities):
                 if i != j:
                     m_TSP += u[i][k] - u[j][k] + n_cities * x[i][j][k] <= n_cities - 1
 
     for c in range(n_couriers):
-        m_TSP += lpSum( x[i][j][c+1] * D[i-1][j-1] for i in range(1,origin+1) for j in range(1,origin+1)) == cour_dist[c]
+        m_TSP += lpSum( x[i][j][c] * D[i][j] for i in range(origin) for j in range(origin)) == cour_dist[c]
     
     for d in cour_dist:
             m_TSP += maximum >= d
 
-    return m_TSP,x,origin
+    return m_TSP,x
 
 
 def set_constraints_model0(couriers, items, courier_size, item_size, distances):
@@ -204,11 +207,11 @@ def set_constraints_model0(couriers, items, courier_size, item_size, distances):
                 model += lpSum(asg[k][i]) >= lpSum(asg[k][i + 1])
 
         # Weigths constraints
-        for k in range(couriers):
-            model += weigths[k] == LpAffineExpression([
-                (asg[k][i][j], item_size[j])
-                for i in range(items)
-                for j in range(items)])
+        # for k in range(couriers):
+        #     model += weigths[k] == LpAffineExpression([
+        #         (asg[k][i][j], item_size[j])
+        #         for i in range(items)
+        #         for j in range(items)])
         # #return model,x,origin
         # return (asg, 
         #         weigths, 
