@@ -51,6 +51,12 @@ constraint forall( i in C)(next_obj[last_obj[i],i] == n+1);
 
  constraint symmetry_breaking_constraint(forall(i,j in C where (i>j /\ L[i]==L[j]) ) (      
                                             next_obj[n+1,i] >= next_obj[n+1,j]));
+                                            
+                                            
+constraint forall( courier in C) ( forall( i,j in 2..dim-1 where i+1<j /\ ass[i,courier]!=n+1 /\ ass[j,courier]!=n+1) (                  D[ass[i,courier],ass[i+1,courier]] + D[ass[i-1,courier],ass[i,courier]]
+                                                              +D[ass[j,courier],ass[j+1,courier]] + D[ass[j-1,courier],ass[j,courier]]<=
+                                                              D[ass[j,courier],ass[i+1,courier]] + D[ass[i-1,courier],ass[j,courier]]
+                                                              +D[ass[i,courier],ass[j+1,courier]]+D[ass[j-1,courier],ass[i,courier]]));
 
 % int:max_obj = n div m + 1;
 % array[C] of var (max_obj-1)..max_obj:n_obj;
@@ -100,8 +106,9 @@ constraint forall(i in C,j in 1..(n_obj[i]+1))(
 
 %%%%%%%%%%%%%%%%%%%%%%%%Search Heuristic%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  int:low_max = max([D[n+1,i] +D[i,n+1] | i in 1..n]);
+int:low_max = max([D[n+1,i] +D[i,n+1] | i in 1..n]);
 int: high = sum(i in 1..(n div m +1))(D[i,i+1]) + low_max;
+
 var low_max..high: max_cap_dist; 
 constraint max_cap_dist = max(distance);           
 
@@ -113,7 +120,7 @@ solve :: seq_search([
           ] )
      %:: relax_and_reconstruct(array1d(next_obj),80) 
      :: relax_and_reconstruct(array1d(ass),80) 
-     :: restart_luby(n)
+    % :: restart_luby(n)
   
       minimize max_cap_dist::domain ;
 

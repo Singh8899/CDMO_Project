@@ -109,11 +109,11 @@ solve :: seq_search([
           
              
           
-             int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
+    %         int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
           ] )
      %:: relax_and_reconstruct(array1d(next_obj),80) 
-     :: relax_and_reconstruct(array1d(ass),80) 
-     :: restart_luby(n)
+   %  :: relax_and_reconstruct(array1d(ass),80) 
+    % :: restart_luby(n)
   
       minimize max_cap_dist::domain ;
 

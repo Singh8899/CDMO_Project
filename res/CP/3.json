@@ -1,8 +1,74 @@
 {
-    "gecode_standard": {
-        "time": 1.0693655014038086,
-        "optimal": true,
-        "obj": 12,
-        "sol": "[[5, 4, 2], [6, 3], [1, 7]]"
-    }
+   "gecode_standard": {
+      "time": 1,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[5, 4, 2], [7, 3], [6, 1]]"
+   },
+   "gecode_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[3, 6, 5], [2, 4], [7, 1]]"
+   },
+   "chuffed_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[5, 4, 2], [3, 7], [1, 6]]"
+   },
+   "or-tools_standard_no_heu": {
+      "time": 1,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[5, 4, 2], [3, 7], [1, 6]]"
+   },
+   "gecode_sym": {
+      "time": 1,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[5, 4, 2], [3, 6], [1, 7]]"
+   },
+   "gecode_sym_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[5, 4, 2], [3, 7], [1, 6]]"
+   },
+   "chuffed_sym_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[3, 6, 5], [2, 4], [1, 7]]"
+   },
+   "or-tools_sym_no_heu": {
+      "time": 1,
+      "optimal": true,
+      "obj": 16,
+      "sol": "[[3, 5, 7], [2, 4], [1, 6]]"
+   },
+   "gecode_optimized": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[3, 6, 5], [2, 4], [1, 7]]"
+   },
+   "gecode_optimized_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[5, 4, 2], [3, 7], [1, 6]]"
+   },
+   "chuffed_optimized_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[5, 4, 2], [3, 6], [1, 7]]"
+   },
+   "or-tools_optimized_no_heu": {
+      "time": 1,
+      "optimal": true,
+      "obj": 16,
+      "sol": "[[3, 5, 7], [2, 4], [1, 6]]"
+   }
 }

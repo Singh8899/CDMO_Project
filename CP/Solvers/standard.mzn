@@ -1,80 +1,117 @@
-% Use this editor as a MiniZinc scratch book
-% Use this editor as a MiniZinc scratch book
-% Use this editor as a MiniZinc scratch book
 include "globals.mzn";
+
 int:m;
 int:n;
-
-int: dim=(n div m)+2;
-
-set of int:dimension=1..dim;
 
 set of int :C = 1..m;   % Couriers
 set of int :I = 1..n;   % Items
 set of int :I_ext = 1..(n+1); % D matrix positions
+
 array[C] of int: L;      % Couriers max weight
 array[I] of int: S;      % Items weight
 array[I_ext,I_ext] of int: D;    % Distance Distributions
 
-array[C] of var 0..sum(S):weights=[sum(j in dimension where ass[j,courier]!=0 ) (S[ass[j,courier]])|courier in C];
-array[dimension,C] of var 0..n:ass;
-array[C] of var int : Start=[ass[1,courier]| courier in C];
-array[C] of var int: Finish=[ ass[(count(i in dimension)(ass[i,courier]!=0)),courier]|courier in C];
-array[C] of var int: num_assigned=[(count(i in dimension)(ass[i,courier]!=0)) | courier in C];
 
-constraint forall(courier in C) 
-           (   
-            ( forall(j,z in dimension where ass[j,courier]==0 /\ z>j) ( ass[z,courier]==0))
-           );
+%%%%%%%%%%%%%%%%%%%%%%%%First model%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-array[C] of var int: distance=[ sum( i in 1..num_assigned[courier]-1) (D[ass[i,courier],ass[i+1,courier]])+D[n+1,Start[courier]] + 
-              D[Finish[courier],n+1] |courier in C]; 
- predicate bin_packing(int: c,array[int] of var int: bin,array[int] of var int: w) =
-   forall( b in lb_array(bin)..ub_array(bin) ) (
-     c >= sum ( i in index_set(bin) ) (
-       w[i] 
-     )   );
+array[I_ext, C] of var I_ext: next_obj; 
+array[C] of var I: last_obj;
+
+
+constraint forall(i in C)(
+              subcircuit(next_obj[I_ext,i])
+            /\(count(next_obj[I,i],n+1)==1)
+            );
+
+constraint forall(i in I)(
+              among(1,next_obj[i,C],I_ext diff {i})
+%               sum( j in C where next_obj[i,j] != i )(1) == 1
+            );
+            
+% constraint forall(i in C)( 
+%               sum(j in I_ext where next_obj[j,i]!=j /\ next_obj[j,i]!=(n+1))(S[next_obj[j,i]]) <= L[i]);
+
+function var int: dist_sum(array[I_ext,C] of var I_ext:ass,array[I_ext, I_ext] of int: D,int :courier) = sum(i in I_ext )(D[i,ass[i,courier]] );                                                                           
+
+
+%var int:total_dist=sum(courier in C) ( dist_sum(next_obj,D,courier));
+array[C] of var int:distance=[dist_sum(next_obj,D,courier)| courier in C];
+%constraint forall(i in C) ( dist_sum(next_obj,D,i) == distance[i]); 
+
+constraint forall( i in C)(next_obj[last_obj[i],i] == n+1);
+
+
+% constraint symmetry_breaking_constraint(forall(i in C)(
+%              isSym(next_obj[I_ext,i],D) -> (next_obj[n+1,i]<= last_obj[i]) ));
+             
+% constraint symmetry_breaking_constraint(forall(i in C)(
+%             (next_obj[n+1,i]<= last_obj[i])-> (isSym(next_obj[I_ext,i],D) -> (next_obj[n+1,i]<= last_obj[i])) ));             
+             
+
+% constraint symmetry_breaking_constraint(forall(i,j in C where (i>j /\ L[i]==L[j]) ) (      
+%                                            next_obj[n+1,i] >= next_obj[n+1,j]));
+
+% int:max_obj = n div m + 1;
+% array[C] of var (max_obj-1)..max_obj:n_obj;
+% constraint forall(i in C) ( n_obj[i] == (sum(j in I_ext where  next_obj[j,i]!=j )(1)-1)); 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%Second model%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+int:dim = (n div m)+3;
+set of int:dimension=1..dim;
+array[dimension,C] of var I_ext:ass; 
+
+ constraint among(n,ass,I);
+ constraint alldifferent_except(ass,(n+1)..(n+1));
+
+
+constraint all_equal(ass[1,C]++ass[dim,C]); %First and last row are the same
+
+array[C] of var int :n_obj = [(count(j in dimension )(ass[j,courier]!=n+1 )) | courier in C];
+
+predicate bin_packing(int: c,array[int] of var int: bin,array[int] of var int: w) =
+  forall( b in lb_array(bin)..ub_array(bin) ) (
+    c >= sum ( i in index_set(bin) ) (
+      w[i]
+    )
+  );
 
 constraint forall(courier in C)(
-             bin_packing(L[courier],ass[dimension,courier],[if ass[i,courier]!=0 then S[ass[i,courier]] else 0 endif|i in dimension]));
-constraint forall(courier in C) (ass[1,courier]!=0);
-% constraint forall(courier in C) 
-%            (   
-%             ( forall(j,z in dimension where ass[j,courier]==0 /\ z>j) ( ass[z,courier]==0))
-%            );
-           
-constraint forall(courier in C, j in 1..dim-1) (
-    ass[j, courier] == 0 -> forall(z in j+1..dim) (ass[z, courier] == 0)
-);
+              bin_packing(L[courier],ass[dimension,courier],[if ass[i,courier]!=n+1 then S[ass[i,courier]] else 0 endif|i in dimension]));
+  
+
+constraint forall(i in C, j in 1..(dim-n_obj[i]-2))( 
+                ass[dim-j,i]==(n+1));                
+                                                
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%Model Channelling%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+constraint forall(i in C,j in 1..(n_obj[i]+1))(
+              next_obj[ass[j,i],i] == ass[j+1, i]);
 
-constraint among(n,ass,I)::domain;
-
-constraint alldifferent_except_0(ass)::domain;
-
-
-
-int:low_max = max([D[n+1,i] +D[i,n+1] | i in 1..n]);
-int: high = max(D)*((n div m)+1) + max(D[n+1,I_ext])+max(D[I_ext,n+1]);
+%%%%%%%%%%%%%%%%%%%%%%%%Search Heuristic%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  int:low_max = max([D[n+1,i] +D[i,n+1] | i in 1..n]);
+int: high = sum(i in 1..(n div m +1))(D[i,i+1]) + low_max;
 var low_max..high: max_cap_dist; 
-constraint max_cap_dist = max(distance);  
-
-constraint forall(c,d in C where L[c]>=weights[d] /\ L[d]>=weights[c] /\ c>d) ( ass[1,c] > ass[1,d]);
-
+constraint max_cap_dist = max(distance);           
 
 solve :: seq_search([
           
-    
-               int_search(ass[1..dim div 2,i],dom_w_deg,indomain_random)|i in C
-               
-        
-            ] )
-
+             
+          
+             int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
+          ] )
+     %:: relax_and_reconstruct(array1d(next_obj),80) 
      :: relax_and_reconstruct(array1d(ass),80) 
      :: restart_luby(n)
-      %satisfy;
-     minimize max_cap_dist ;
-
+  
+      minimize max_cap_dist::domain ;
 

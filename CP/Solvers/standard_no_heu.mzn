@@ -22,35 +22,35 @@ array[C] of var I: last_obj;
 constraint forall(i in C)(
               subcircuit(next_obj[I_ext,i])
             /\(count(next_obj[I,i],n+1)==1)
-            )::domain;
+            );
 
 constraint forall(i in I)(
               among(1,next_obj[i,C],I_ext diff {i})
 %               sum( j in C where next_obj[i,j] != i )(1) == 1
-            )::domain;
+            );
             
+% constraint forall(i in C)( 
+%               sum(j in I_ext where next_obj[j,i]!=j /\ next_obj[j,i]!=(n+1))(S[next_obj[j,i]]) <= L[i]);
 
 function var int: dist_sum(array[I_ext,C] of var I_ext:ass,array[I_ext, I_ext] of int: D,int :courier) = sum(i in I_ext )(D[i,ass[i,courier]] );                                                                           
 
 
+%var int:total_dist=sum(courier in C) ( dist_sum(next_obj,D,courier));
 array[C] of var int:distance=[dist_sum(next_obj,D,courier)| courier in C];
-
+%constraint forall(i in C) ( dist_sum(next_obj,D,i) == distance[i]); 
 
 constraint forall( i in C)(next_obj[last_obj[i],i] == n+1);
 
- predicate isSym(array[I_ext] of var I_ext: arr, array[I_ext,I_ext] of int: D) =
-     forall( i in I_ext) (
-         D[i,arr[i]] == D[arr[i],i]);
 
- constraint symmetry_breaking_constraint(forall(i in C)(
-              isSym(next_obj[I_ext,i],D) -> (next_obj[n+1,i]<= last_obj[i]) ));
+% constraint symmetry_breaking_constraint(forall(i in C)(
+%              isSym(next_obj[I_ext,i],D) -> (next_obj[n+1,i]<= last_obj[i]) ));
              
- constraint symmetry_breaking_constraint(forall(i in C)(
-             (next_obj[n+1,i]<= last_obj[i])-> (isSym(next_obj[I_ext,i],D) -> (next_obj[n+1,i]<= last_obj[i])) ));             
+% constraint symmetry_breaking_constraint(forall(i in C)(
+%             (next_obj[n+1,i]<= last_obj[i])-> (isSym(next_obj[I_ext,i],D) -> (next_obj[n+1,i]<= last_obj[i])) ));             
              
 
- constraint symmetry_breaking_constraint(forall(i,j in C where (i>j /\ L[i]==L[j]) ) (      
-                                            next_obj[n+1,i] >= next_obj[n+1,j]));
+% constraint symmetry_breaking_constraint(forall(i,j in C where (i>j /\ L[i]==L[j]) ) (      
+%                                            next_obj[n+1,i] >= next_obj[n+1,j]));
 
 % int:max_obj = n div m + 1;
 % array[C] of var (max_obj-1)..max_obj:n_obj;
@@ -66,8 +66,8 @@ int:dim = (n div m)+3;
 set of int:dimension=1..dim;
 array[dimension,C] of var I_ext:ass; 
 
-constraint among(n,ass,I)::domain;
-constraint alldifferent_except(ass,(n+1)..(n+1))::domain;
+ constraint among(n,ass,I);
+ constraint alldifferent_except(ass,(n+1)..(n+1));
 
 
 constraint all_equal(ass[1,C]++ass[dim,C]); %First and last row are the same
@@ -80,8 +80,6 @@ predicate bin_packing(int: c,array[int] of var int: bin,array[int] of var int: w
       w[i]
     )
   );
-array[C] of var int: weights= [sum(i in dimension where ass[i,courier]!=n+1) (S[ass[i,courier]])|courier in C];
-  constraint symmetry_breaking_constraint( forall(courier1,courier2 in C where courier1<courier2 /\ L[courier1]>=weights[courier2] /\ L[courier2]>= weights[courier1]) ( ass[2,courier1]< ass[2,courier2]));
 
 constraint forall(courier in C)(
               bin_packing(L[courier],ass[dimension,courier],[if ass[i,courier]!=n+1 then S[ass[i,courier]] else 0 endif|i in dimension]));
@@ -109,11 +107,11 @@ solve :: seq_search([
           
              
           
-             int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
+     %        int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
           ] )
      %:: relax_and_reconstruct(array1d(next_obj),80) 
-     :: relax_and_reconstruct(array1d(ass),80) 
-     :: restart_luby(n)
+   %  :: relax_and_reconstruct(array1d(ass),80) 
+    % :: restart_luby(n)
   
       minimize max_cap_dist::domain ;
 
