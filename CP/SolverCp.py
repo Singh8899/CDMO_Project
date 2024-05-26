@@ -31,7 +31,7 @@ def get_model(model_config):
      return model
 
 def solve_CP(instance_number, model, solver):
-    time_to_solve=1
+    time_to_solve=300
     if instance_number >= 10:
         model.add_file("Instances/inst" + str(instance_number) + ".dzn")
     else:
