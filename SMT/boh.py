@@ -3,6 +3,14 @@ from itertools import combinations
 import numpy as np
 import time
 from math import floor
+import signal
+
+import threading
+delay_time = 3   # delay time in seconds
+def watchdog():
+  print('Taken too long time, going on next instance/model...')
+  os._exit(1)
+
 def exactly_one(variables):
     # At least one of the variables must be true
     at_least_one = Or(variables)
@@ -39,7 +47,9 @@ def inputFile(num):
 n_couriers, n_cities, courier_capacity, item_size, D=inputFile(11)
 dimension=(n_cities//n_couriers)+3
 
+
 smt_solver=Optimize()
+
 
 ass= [[Int(f"x_{i}_{j}") for j in range(n_couriers) ]for i in range(dimension)]
 
@@ -65,11 +75,6 @@ for i in range(dimension):
 
 for courier in range(n_couriers):
     smt_solver.add(ass[1][courier]!=n_cities+1)
-
-#Ensure that all city are visited
-for city in range(1, n_cities+1):
-    all_city_visited_constraint=[ass[i][j] == city for i in range(dimension) for j in range(n_couriers)]
-    smt_solver.add(Or(all_city_visited_constraint))
 
 for courier in range(n_couriers):
     smt_solver.add(ass[0][courier] == n_cities+1)
@@ -113,8 +118,8 @@ smt_solver.add(max_dist<=upper_bound)
 #     print("Failed to solve")
 
 
-smt_solver.set("timeout",60000)
 
+print("sto iniziando")
 start_time = time.time()
 
 
@@ -122,10 +127,8 @@ smt_solver.minimize(max_dist)
 result=smt_solver.check()
 
 end_time = time.time()
-
+print("ha finito")
 time_taken = end_time - start_time
-smt_solver.minimize(max_dist)
-result=smt_solver.check()
 
 model=smt_solver.model()
 print(model)
