@@ -8,12 +8,12 @@ import gurobipy as gp
 
 
 def main():
-    time_limit = 60
+    time_limit = 90
     solvers = {
-                "CBC":PULP_CBC_CMD(msg=False, timeLimit=time_limit),
-                "HiGHS":getSolver('HiGHS', timeLimit=time_limit,msg=False)
+                 "CBC":PULP_CBC_CMD(timeLimit=time_limit),
+                # "HiGHS":getSolver('HiGHS', timeLimit=time_limit,msg=False)
               }
-    for instance in range(11,15):
+    for instance in range(16,17):
         json_dict = {}
         n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
         m_TSP,x,dis = set_const(n_couriers, n_items, courier_capacity,item_size, D)
@@ -34,7 +34,7 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     n_obj = n_items // n_couriers + 1
     min_dist = max([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
     low_cour = min([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
-    max_dist = min_dist + 2*round(log(sum([D[i,i+1] for i in range(n_obj+1)]))) +low_cour
+    max_dist = min_dist + 2*round(log(sum([D[i,i+1] for i in range(n_obj+1)]))) + low_cour + 150
     
     print(low_cour,min_dist,max_dist)
     #We define a 3d matrix of variables x[i][j][c] means that courier c has used node (i,j) to leave city i and reach city j
@@ -83,14 +83,15 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     for c in range(n_couriers):
         for i in range(n_cities):
             for j in range(n_cities):
-                m_TSP += (x[i][j][c]   + x[j][i][c])  <=1
+                m_TSP += (x[i][j][c]   + x[j][i][c])  <= 1
 
     for j in range(n_couriers):
-        m_TSP += lpSum(x[i][j][c] for i in range(origin) for c in range(n_couriers)) ==1
+        m_TSP += lpSum(x[i][j][c] for i in range(origin) for c in range(n_couriers)) == 1
 
+    # To eliminate subroutes
     for k in range(n_couriers):
-        for i in range(n_cities):
-            for j in range(n_cities):
+        for i in range(n_cities//2):
+            for j in range(n_cities//2):
                 if i != j:
                     m_TSP += u[i][k] - u[j][k] + n_cities * x[i][j][k] <= n_cities - 1
 
