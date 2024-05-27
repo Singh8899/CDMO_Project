@@ -62,21 +62,19 @@ def pathFormatter(x,n_cities, n_couriers):
         sol.append(solution_courier)
     return sol
 
-def format_and_store(x,n_cities,n_couriers,time,optimal,obj,instance):
+def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
     res = pathFormatter(x,n_cities, n_couriers)
+    return {"time": time, "optimal": optimal, "obj": int(obj), "sol": str(res)}
+
+
+def format_and_store(instance,json_dict):
     # Get the directory of the current script
     current_directory = os.getcwd()
     parent_directory = os.path.dirname(current_directory)
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-    json_dict = {}
-    key_dict="solvername"
-    json_dict[key_dict] = {"time": time, "optimal": optimal, "obj": int(obj), "sol": str(res)}
     # Define the file name and path
     file_name = f"{instance}.json"
-    print(json_dict)
+    
     # Save the dictionary to a JSON file
     with open(parent_directory+"/res/MIP/" + file_name, 'w') as file:
             json.dump(json_dict, file, indent=3)
