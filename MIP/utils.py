@@ -46,17 +46,19 @@ def routePlot(paths,D):
 
 def pathFormatter(x,n_cities, n_couriers):
     sol=[]
+    #stamp=[[[value(x[i][j][c]) for j in range(n_cities)]for i in range(n_cities)]for c in range(n_couriers)]
+    #print(stamp)
     for c in range(n_couriers):
         solution_courier=[]
-        num_assigned_to_courier =len([1 for i in range(n_cities) for j in range(n_cities) if value(x[i][j][c])==1])
+        num_assigned_to_courier =len([1 for i in range(n_cities) for j in range(n_cities) if value(x[i][j][c])>=0.9])
         for i in range(n_cities-1):
-            if value(x[n_cities-1][i][c])==1:
+            if value(x[n_cities-1][i][c])>=0.9:
                 solution_courier.append(i+1)
                 city = i
                 break
         for j in range(num_assigned_to_courier):
             for i in range(n_cities-1):
-                if value(x[city][i][c])==1:
+                if value(x[city][i][c])>0.9:
                     solution_courier.append(i+1)
                     city = i
         sol.append(solution_courier)
@@ -64,7 +66,7 @@ def pathFormatter(x,n_cities, n_couriers):
 
 def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
     res = pathFormatter(x,n_cities, n_couriers)
-    return {"time": time, "optimal": optimal, "obj": int(obj), "sol": str(res)}
+    return {"time": time, "optimal": optimal, "obj": round(obj), "sol": str(res)}
 
 
 def format_and_store(instance,json_dict):

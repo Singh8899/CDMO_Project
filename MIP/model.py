@@ -3,6 +3,7 @@ import numpy as np
 from utils import *
 import time
 from math import floor
+from math import log
 import gurobipy as gp
 
 
@@ -10,18 +11,18 @@ def main():
     time_limit = 60
     solvers = {
                 "CBC":PULP_CBC_CMD(msg=False, timeLimit=time_limit),
-                "HiGHS":getSolver('HiGHS',msg=False, timeLimit=time_limit)
+                "HiGHS":getSolver('HiGHS', timeLimit=time_limit,msg=False)
               }
-    for instance in range(7,8):
+    for instance in range(11,15):
         json_dict = {}
+        n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
+        m_TSP,x,dis = set_const(n_couriers, n_items, courier_capacity,item_size, D)
         for solver in solvers:
-            n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
-
-            m_TSP,x = set_const(n_couriers, n_items, courier_capacity,item_size, D)
             m_TSP.solve(solvers[solver])
             # print([(i, j, c) for i in range(n_items+1) for j in range(n_items+1) for c in range(n_couriers) if pulp.value(x[i][j][c]) == 1])
             solve_time = floor(m_TSP.solutionTime)
             opt = (time_limit > solve_time)
+            print([value(i) for i in dis])
             json_dict[solver] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,value(m_TSP.objective))
         format_and_store(instance,json_dict)
 
@@ -32,8 +33,9 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     origin=n_cities+1
     n_obj = n_items // n_couriers + 1
     min_dist = max([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
-    max_dist = 200 #sum([D[i,i+1] for i in range(0,n_obj+1)]) + min_dist
     low_cour = min([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
+    max_dist = min_dist + 2*round(log(sum([D[i,i+1] for i in range(n_obj+1)]))) +low_cour
+    
     print(low_cour,min_dist,max_dist)
     #We define a 3d matrix of variables x[i][j][c] means that courier c has used node (i,j) to leave city i and reach city j
     x = LpVariable.dicts("x", (range(origin), range(origin), range(n_couriers)), cat="Binary")
@@ -98,7 +100,7 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     for d in cour_dist:
             m_TSP += maximum >= d
 
-    return m_TSP,x
+    return m_TSP,x,cour_dist
 
 
 
