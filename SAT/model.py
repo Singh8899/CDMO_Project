@@ -4,19 +4,21 @@ from itertools import combinations
 from math import floor
 import time
 
+time_limit = 300
+
 def main():
-    for instance in range(8,11):
+    for instance in range(2,3):
 
         json_dict = {}
         n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
         courier_capacity,item_size,D,load_bit,dist_bit,min_dist,low_cour,max_dist = instance_format(n_couriers, n_items,courier_capacity,item_size, D)
         start_time = time.time()
         x,maximum = set_const(n_couriers, n_items, courier_capacity,item_size, D,load_bit,dist_bit,min_dist,low_cour,max_dist)
-        solve_time = round(time.time() - start_time)
-
-        opt = (300 > solve_time)
-        json_dict["Z3"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long())
-        format_and_store(instance,json_dict)
+        if x != None:
+            solve_time = round(time.time() - start_time)
+            opt = (time_limit > solve_time)
+            json_dict["Z3"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long())
+            format_and_store(instance,json_dict)
 
 def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_dist,min_dist,low_cour,max_dist):
     # Create all the variables
@@ -39,7 +41,7 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
                     for k in range(n_couriers)]    
     n_cities_bin = int_to_bool(n_items,bit_length(n_items*2))
     # Create the solver instance
-    time_limit = 300 
+
     s = Optimize()
     s.set("timeout", time_limit*1000,)
     s.add(greater_eq(maximum,min_dist))
@@ -120,17 +122,21 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
     
     for d in cour_dist:
             s.add(greater_eq(maximum,d))
-    s.minimize(bool_vars_to_int(maximum))
+    opt = s.minimize(bool_vars_to_int(maximum))
 
-    if s.check() == sat:
+    # Check for satisfiability
+    status = s.check()
+
+    if status == unknown or status == sat:
         model = s.model()
+        print(maximum,type(maximum))
+        print(model.evaluate(bool_vars_to_int(maximum)),type(model.evaluate(bool_vars_to_int(maximum))))
         x = [[[int(is_true(model[p[k][i][j]]))
                 for j in range(origin)] 
                 for i in range(origin)] 
                     for k in range(n_couriers)]
         return x,model.evaluate(bool_vars_to_int(maximum))
     else:
-        print("Unsatisfiable")
         return None,None
 
 def greater_eq(vec1, vec2):
