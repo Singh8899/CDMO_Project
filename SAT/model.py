@@ -7,14 +7,15 @@ import time
 time_limit = 300
 
 def main():
-    for instance in range(2,3):
+    for instance in range(10,11):
 
         json_dict = {}
         n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
         courier_capacity,item_size,D,load_bit,dist_bit,min_dist,low_cour,max_dist = instance_format(n_couriers, n_items,courier_capacity,item_size, D)
         start_time = time.time()
         x,maximum = set_const(n_couriers, n_items, courier_capacity,item_size, D,load_bit,dist_bit,min_dist,low_cour,max_dist)
-        if x != None:
+        print(type(maximum))
+        if maximum != None:
             solve_time = round(time.time() - start_time)
             opt = (time_limit > solve_time)
             json_dict["Z3"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long())
@@ -41,12 +42,14 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
                     for k in range(n_couriers)]    
     n_cities_bin = int_to_bool(n_items,bit_length(n_items*2))
     # Create the solver instance
-
     s = Optimize()
-    s.set("timeout", time_limit*1000,)
+    s.set("timeout", time_limit*1000)
+    # Upper/lower bounds on the function to minimize
     s.add(greater_eq(maximum,min_dist))
     s.add(greater_eq(max_dist,maximum))
+    # 
     s.add([greater_eq(n_cities_bin,u[k][i]) for i in range(n_items) for k in range(n_couriers) ])
+    # Upper/lower bounds on the distance travelled by each courier
     for i in cour_dist:
         s.add(greater_eq(max_dist,i))
         s.add(greater_eq(i,low_cour))
@@ -60,13 +63,12 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
         s.add([weights[c][i] == weight_sum[i] for i in range(bit_weight)])
         s.add(greater_eq(courier_capacity[c],weight_sum))
         
-
     # Ensure that we dont use useless arcs 
     for i in range(origin):
         for c in range(n_couriers):
             s.add(p[c][i][i] == False)
 
-    # # Ensure that every city is reached by one and only one courier
+    # Ensure that every city is reached by one and only one courier
     for j in range(n_items) :
         s.add(exactly_one_he([p[c][i][j] for i in range(origin) for c in range(n_couriers)] ,f"codlr_{j}"))
 
@@ -74,25 +76,27 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
     for c in range(n_couriers) :
         s.add(exactly_one_he([p[c][n_items][j] for j in range(n_items)],f"depLev_{c}"))
 
-    # # Ensure that every courier reach again the depot
+    # Ensure that every courier reach again the depot
     for c in range(n_couriers) :
         s.add(exactly_one_he([p[c][i][n_items] for i in range(n_items)],f"arrLev_{c}"))
     
-    # # Ensure that each courier path it's connected
+    # Ensure that each courier path it's connected
     for j in range(origin):
         for c in range(n_couriers):
             s.add(Or([p[c][i][j] for i in range(origin)]) == 
                   Or([p[c][j][i] for i in range(origin)]) )
 
+    # To avoid round-routes internally
+    # (not keeping in consideration the last column and last row, because that case it's allowed)
+    # This constraint it's extra ( covered by the subroutes-elim contraints)
+    # Just decreases computational time
     for c in range(n_couriers):
         for i in range(n_items):
             for j in range(n_items):
                 if i != j:
                     s.add(Or(Not(p[c][i][j]),Not(p[c][j][i])))
 
-    for j in range(n_couriers):
-        s.add(exactly_one_he([p[c][i][j] for i in range(origin) for c in range(n_couriers)],f"rand_{j}"))
-
+    # computing dist array with distance travelled by every courier
     for c in range(n_couriers):
         dist = binary_sum([binary_prod(p[c][i][j], D[i][j]) 
                             for i in range(origin) 
@@ -118,8 +122,8 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
                                             ])
                             )
                          )
-                    # m_TSP += u[i][k] +1  + n_cities * x[i][j][k] <= n_cities  + u[j][k]
-    
+    # Contraining objective function "maximum" to be greater than the distance 
+    # travelled by each courier
     for d in cour_dist:
             s.add(greater_eq(maximum,d))
     opt = s.minimize(bool_vars_to_int(maximum))
@@ -127,15 +131,20 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
     # Check for satisfiability
     status = s.check()
 
-    if status == unknown or status == sat:
+    if  status == sat:
+        print(status)
         model = s.model()
-        print(maximum,type(maximum))
-        print(model.evaluate(bool_vars_to_int(maximum)),type(model.evaluate(bool_vars_to_int(maximum))))
+        print(model.evaluate(bool_vars_to_int(maximum)))
         x = [[[int(is_true(model[p[k][i][j]]))
                 for j in range(origin)] 
                 for i in range(origin)] 
                     for k in range(n_couriers)]
         return x,model.evaluate(bool_vars_to_int(maximum))
+    elif status == unknown:
+        print(status)
+        model = s.model()
+        objective_value = model.eval(bool_vars_to_int(maximum),model_completion=True).simplify()
+        print(objective_value)
     else:
         return None,None
 
@@ -156,6 +165,23 @@ def greater_eq(vec1, vec2):
     borrow = Or( And(borrow,Not(b1)), And(borrow,b2) , And(b2,Not(b1))  )
     return Not(borrow)
 
+def at_least_one(bool_vars):
+  return Or(bool_vars)
+
+def at_most_one(bool_vars, name):
+  constraints = []
+  n = len(bool_vars)
+  s = [Bool(f"s_{name}_{i}") for i in range(n - 1)]
+  constraints.append(Or(Not(bool_vars[0]), s[0]))
+  constraints.append(Or(Not(bool_vars[n-1]), Not(s[n-2])))
+  for i in range(1, n - 1):
+      constraints.append(Or(Not(bool_vars[i]), s[i]))
+      constraints.append(Or(Not(bool_vars[i]), Not(s[i-1])))
+      constraints.append(Or(Not(s[i-1]), s[i]))
+  return And(constraints)
+
+def exactly_one_he(bool_vars, name):
+  return And(at_least_one(bool_vars), at_most_one(bool_vars, name))
 
 def binary_prod(boolVar, num):
     return [And(boolVar,i) for i in num]
@@ -175,8 +201,8 @@ def at_most_one_he(bool_vars, name):
     y = Bool(f"y_{name}")
     return And(And(at_most_one_np(bool_vars[:3] + [y])), And(at_most_one_he(bool_vars[3:] + [Not(y)], name+"_")))
 
-def exactly_one_he(bool_vars, name):
-    return And(at_most_one_he(bool_vars, name), at_least_one_he(bool_vars))
+# def exactly_one_he(bool_vars, name):
+#     return And(at_most_one_he(bool_vars, name), at_least_one_he(bool_vars))
 
 def bool_vars_to_int(bool_vars):
     return Sum([If(b, 2**i, 0) for i, b in enumerate(list(reversed(bool_vars)))])
