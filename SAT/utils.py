@@ -4,6 +4,7 @@ import os
 from pulp import *
 from z3 import *
 from math import log
+from itertools import combinations
 
 def inputFile(num):
     # Change the working directory to the directory where the script is located
@@ -64,8 +65,12 @@ def pathFormatter(x,n_cities, n_couriers):
     return sol
 
 def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
-    res = pathFormatter(x,n_cities, n_couriers)
-    return {"time": time, "optimal": optimal, "obj": round(obj), "sol": str(res)}
+    
+    if obj < 0:
+        return {"time": time, "optimal": optimal, "obj": "N/A", "sol": str([])}
+    else:
+        return {"time": time, "optimal": optimal, "obj": round(obj), "sol": str(pathFormatter(x,n_cities, n_couriers))}
+    
 
 
 def format_and_store(instance,json_dict):
@@ -114,3 +119,71 @@ def bit_length(n):
     if n == 0:
         return 1
     return int(n).bit_length()
+
+def greater_eq(vec1, vec2):
+    # Ensure the two vectors have the same length
+    assert len(vec1) == len(vec2)
+    # Initialize constraints list
+    b1 = vec1[-1] 
+    b2 = vec2[-1] 
+    borrow = And(Not(b1),b2)
+    # Subtract vec2 from vec1
+    for i in range(2,len(vec1)):
+        b1 = vec1[-i] 
+        b2 = vec2[-i] 
+        borrow = Or( And(borrow,Not(b1)), And(borrow,b2) , And(b2,Not(b1))  )
+    b1 = vec1[0] 
+    b2 = vec2[0] 
+    borrow = Or( And(borrow,Not(b1)), And(borrow,b2) , And(b2,Not(b1))  )
+    return Not(borrow)
+
+
+def binary_prod(boolVar, num):
+    return [And(boolVar,i) for i in num]
+
+def at_least_one_np(bool_vars):
+    return Or(bool_vars)
+
+def at_most_one_np(bool_vars, name = ""):
+    return And([Not(And(pair[0], pair[1])) for pair in combinations(bool_vars, 2)])
+
+def at_least_one_he(bool_vars):
+    return at_least_one_np(bool_vars)
+
+def at_most_one_he(bool_vars, name):
+    if len(bool_vars) <= 4:
+        return And(at_most_one_np(bool_vars))
+    y = Bool(f"y_{name}")
+    return And(And(at_most_one_np(bool_vars[:3] + [y])), And(at_most_one_he(bool_vars[3:] + [Not(y)], name+"_")))
+
+def exactly_one_he(bool_vars, name):
+    return And(at_most_one_he(bool_vars, name), at_least_one_he(bool_vars))
+
+def bool_vars_to_int(bool_vars):
+    return Sum([If(b, 2**i, 0) for i, b in enumerate(list(reversed(bool_vars)))])
+
+def bin_sum(vec1, vec2):
+    # Ensure the two vectors have the same length
+    assert len(vec1) == len(vec2)
+    # Initialize constraints list
+    res = []
+    b1 = vec1[-1] 
+    b2 = vec2[-1] 
+    res.append(Xor(b1,b2)) 
+    borrow = And(b1,b2)
+    # Add vec2 from vec1
+    for i in range(2,len(vec1)):
+        b1 = vec1[-i]
+        b2 = vec2[-i]
+        res.append(Or( And( Not(borrow),Xor(b1,b2)), And(borrow,b1==b2) ) ) 
+        borrow = Or( And(borrow,b1), And(borrow,b2) , And(b2,b1)  )
+    b1 = vec1[0] 
+    b2 = vec2[0] 
+    res.append(Or( And( Not(borrow),Xor(b1,b2)), And(borrow,b1==b2) ) ) 
+    return list(reversed(res))
+
+def binary_sum(bin_numbers):
+    sum = bin_numbers[0]
+    for i in bin_numbers[1:]:
+        sum = bin_sum(sum,i)
+    return sum
