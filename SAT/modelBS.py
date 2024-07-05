@@ -17,6 +17,7 @@ def main(instance,cfg):
         add_sb()
     past_time,optimal,obj = binary_search(n_couriers, n_items,D_int,max_dist,min_dist,(maximum, x, cour_dist, weights))
     print(past_time, optimal, obj)
+    
     model = s.model()
     x = [[[int(is_true(model[p[k][i][j]]))
                             for j in range(n_items+1)] 
