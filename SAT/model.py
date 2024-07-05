@@ -7,18 +7,17 @@ import time
 time_limit = 100
 
 def main():
-    for instance in range(1,6):
+    for instance in range(1,7):
 
         json_dict = {}
         n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
-        courier_capacity,item_size,D,load_bit,dist_bit,min_dist,low_cour,max_dist = instance_format(n_couriers, n_items,courier_capacity,item_size, D)
+        courier_capacity,item_size,D,w_bit,d_bit,min_dist,low_cour,max_dist = instance_format(n_couriers, n_items,courier_capacity,item_size, D)
         start_time = time.time()
-        x,maximum = set_const(n_couriers, n_items, courier_capacity,item_size, D,load_bit,dist_bit,min_dist,low_cour,max_dist)
-        print(type(maximum))
+        x,maximum = set_const(n_couriers, n_items, courier_capacity,item_size, D,w_bit,d_bit,min_dist,low_cour,max_dist)
         if maximum != None:
             solve_time = round(time.time() - start_time)
             opt = (time_limit > solve_time)
-            json_dict["Z3"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long())
+            json_dict["standard"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long())
             format_and_store(instance,json_dict)
 
 def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_dist,min_dist,low_cour,max_dist):
@@ -44,7 +43,7 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D,bit_weight,bit_
     # Create the solver instance
     s = Optimize()
     s.set("timeout", time_limit*1000)
-    # Upper/lower bounds on the function to minimize
+    # Upper/lower bounds on the objective function to minimize
     s.add(greater_eq(maximum,min_dist))
     s.add(greater_eq(max_dist,maximum))
     # 
