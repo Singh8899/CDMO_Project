@@ -44,39 +44,39 @@ def routePlot(paths,D):
     plt.grid(True)
     plt.show()    
 
-def pathFormatter(x,origin, n_couriers):
+def pathFormatter(x,n_cities, n_couriers):
     sol=[]
-    for c in range(1,n_couriers+1):
+    #stamp=[[[value(x[i][j][c]) for j in range(n_cities)]for i in range(n_cities)]for c in range(n_couriers)]
+    #print(stamp)
+    for c in range(n_couriers):
         solution_courier=[]
-        num_assigned_to_courier =len([1 for i in range(1,origin+1) for j in range(1,origin+1) if value(x[i][j][c])==1])
-        for i in range(1,origin):
-            if value(x[origin][i][c])==1:
-                solution_courier.append(i)
+        num_assigned_to_courier =len([1 for i in range(n_cities) for j in range(n_cities) if value(x[i][j][c])>=0.9])
+        for i in range(n_cities-1):
+            if value(x[n_cities-1][i][c])>=0.9:
+                solution_courier.append(i+1)
                 city = i
                 break
         for j in range(num_assigned_to_courier):
-            for i in range(1,origin):
-                if value(x[city][i][c])==1:
-                    solution_courier.append(i)
+            for i in range(n_cities-1):
+                if value(x[city][i][c])>0.9:
+                    solution_courier.append(i+1)
                     city = i
         sol.append(solution_courier)
     return sol
 
-def format_and_store(x,origin,n_couriers,time,optimal,obj,instance):
-    res = pathFormatter(x,origin, n_couriers)
+def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
+    res = pathFormatter(x,n_cities, n_couriers)
+    return {"time": time, "optimal": optimal, "obj": round(obj), "sol": str(res)}
+
+
+def format_and_store(instance,json_dict):
     # Get the directory of the current script
     current_directory = os.getcwd()
     parent_directory = os.path.dirname(current_directory)
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-    json_dict = {}
-    key_dict="solvername"
-    json_dict[key_dict] = {"time": time, "optimal": optimal, "obj": int(obj), "sol": str(res)}
     # Define the file name and path
     file_name = f"{instance}.json"
-    print(json_dict)
+    
     # Save the dictionary to a JSON file
     with open(parent_directory+"/res/MIP/" + file_name, 'w') as file:
             json.dump(json_dict, file, indent=3)

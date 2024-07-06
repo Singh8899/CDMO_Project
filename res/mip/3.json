@@ -1,8 +1,14 @@
 {
-   "solvername": {
-      "time": 2,
+   "CBC": {
+      "time": 0,
       "optimal": true,
       "obj": 12,
-      "sol": "[[1, 4], [5, 6, 7], [2, 3]]"
+      "sol": "[[5, 4, 2], [3, 6], [7, 1]]"
+   },
+   "HiGHS": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": "[[3, 6, 5], [4, 2], [7, 1]]"
    }
 }

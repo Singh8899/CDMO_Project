@@ -1,8 +1,14 @@
 {
-    "solvername": {
-        "time": 0.03793954849243164,
-        "optimal": true,
-        "obj": 206,
-        "sol": "[[2], [1, 3]]"
-    }
+   "CBC": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": "[[2], [1, 3]]"
+   },
+   "HiGHS": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": "[[2], [1, 3]]"
+   }
 }
