@@ -54,7 +54,6 @@ def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
     else:
         res = pathFormatter(x,n_cities, n_couriers)
         return {"time": time, "optimal": optimal, "obj": round(obj), "sol": res}
-        
 
 
 def format_and_store(instance,json_dict):

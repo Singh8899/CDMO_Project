@@ -1,14 +1,14 @@
 {
    "CBC": {
-      "time": 60,
+      "time": 300,
       "optimal": false,
-      "obj": 302,
-      "sol": "[[31], [], []]"
+      "obj": "N/A",
+      "sol": []
    },
    "HiGHS": {
-      "time": 67,
+      "time": 300,
       "optimal": false,
-      "obj": 0,
-      "sol": "[[], [], []]"
+      "obj": "N/A",
+      "sol": []
    }
 }
