@@ -38,12 +38,15 @@ def main(args):
         m_TSP,x,dis = set_const(n_couriers, n_items, courier_capacity,item_size, D)
         for solver in solvers:
             m_TSP.solve(solvers[solver])
-            # print([(i, j, c) for i in range(n_items+1) for j in range(n_items+1) for c in range(n_couriers) if pulp.value(x[i][j][c]) == 1])
-            solve_time = floor(m_TSP.solutionTime)
-            opt = (time_limit > solve_time)
-            solve_time = 300 if solve_time > 300 else solve_time
-            print([value(i) for i in dis])
-            json_dict[solver] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,value(m_TSP.objective))
+            status = m_TSP.status
+            print("status",m_TSP.status)
+            if status == 1:    
+                solve_time = 300 if floor(m_TSP.solutionTime) > 300 else floor(m_TSP.solutionTime)
+                opt = (time_limit > solve_time)
+                print([value(i) for i in dis])
+                json_dict[solver] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,value(m_TSP.objective))
+            else:
+                json_dict[solver] = jsonizer(x,n_items+1,n_couriers,300,False,-1)
         format_and_store(instance,json_dict)
 
 def set_const(n_couriers, n_items, courier_capacity,item_size, D):

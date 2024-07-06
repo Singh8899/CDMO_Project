@@ -25,24 +25,7 @@ def inputFile(num):
 
     dist = np.array([[lines[j][i] for i in range(len(lines[j]))] for j in range(4, len(lines))])
     dist = dist.astype(int)
-    return n_couriers, n_items, max_load, size_item, dist  
-
-def cityPlot(D):
-    plt.figure(figsize=(5, 5))
-    last = D.shape[0]-1
-    for c in range(last):
-        plt.scatter(c+1, D[-1,c],  c='r')
-    plt.scatter(D[-1,-1], D[-1,-1], c='b')
-    plt.grid(True)
-    plt.show()
-
-def routePlot(paths,D):
-    cityPlot(D)
-    for path in paths:
-        print("ok")
-        plt.plot([path[0]-1,path[1]-1],[D[-1,path[0]-1],D[-1,path[1]-1]])
-    plt.grid(True)
-    plt.show()    
+    return n_couriers, n_items, max_load, size_item, dist   
 
 def pathFormatter(x,n_cities, n_couriers):
     sol=[]
@@ -65,8 +48,13 @@ def pathFormatter(x,n_cities, n_couriers):
     return sol
 
 def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
-    res = pathFormatter(x,n_cities, n_couriers)
-    return {"time": time, "optimal": optimal, "obj": round(obj), "sol": str(res)}
+    
+    if obj < 0:
+        return {"time": time, "optimal": optimal, "obj": "N/A", "sol": []}
+    else:
+        res = pathFormatter(x,n_cities, n_couriers)
+        return {"time": time, "optimal": optimal, "obj": round(obj), "sol": res}
+        
 
 
 def format_and_store(instance,json_dict):

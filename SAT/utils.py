@@ -67,9 +67,9 @@ def pathFormatter(x,n_cities, n_couriers):
 def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
     
     if obj < 0:
-        return {"time": time, "optimal": optimal, "obj": "N/A", "sol": str([])}
+        return {"time": time, "optimal": optimal, "obj": "N/A", "sol": []}
     else:
-        return {"time": time, "optimal": optimal, "obj": round(obj), "sol": str(pathFormatter(x,n_cities, n_couriers))}
+        return {"time": time, "optimal": optimal, "obj": round(obj), "sol": pathFormatter(x,n_cities, n_couriers)}
     
 
 
