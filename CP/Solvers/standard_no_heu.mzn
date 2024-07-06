@@ -105,7 +105,7 @@ constraint max_cap_dist = max(distance);
 
 solve :: seq_search([
           
-             
+             int_search(ass, first_fail, indomain_min),
           
      %        int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
           ] )

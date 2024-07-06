@@ -4,7 +4,7 @@ import numpy as np
 import time
 from math import floor
 import json
-
+import argparse
 
 def at_least_one(bool_vars):
     return Or(bool_vars)
@@ -213,45 +213,77 @@ def solve_smt(model_config, instance_number, time_to_solve):
 
 #
 
-def main():
-    n_instances = 21
-    time_to_solve = 60
-    configurations = ["standard", "standard_sym_heu"]
-    current_directory = os.getcwd()
-    parent_directory = os.path.dirname(current_directory)
-    for instance_number in range(13, n_instances + 1):
+def main(instance=None,sym=True):
+    instance = args.instance
+    model_config = args.configuration
 
+    if instance is None:
+        n_instances = 21
+        time_to_solve = 60
+        configurations = ["standard", "standard_sym_heu"]
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+        parent_directory = os.path.dirname(current_directory)
+        for instance_number in range(1, n_instances + 1):
+
+            json_final = {}
+
+            for model_config in configurations:
+                print("---Solving Instance Number --- : ", instance_number, " with ", model_config, " model---")
+
+                json_instance = {}
+                time = 0
+                optimal = False
+                obj = None
+                sol = []
+
+                time, optimal, obj, sol = solve_smt(model_config, instance_number, time_to_solve)
+
+                print(f"Time taken ===> {floor(time)}s optimality===> {optimal} objective found ===> {obj}")
+                print(f"Best route found is ====>{str(sol)} <======")
+                json_instance["time"] = floor(time)
+                json_instance["optimal"] = optimal
+                json_instance["obj"] = str(obj)
+                json_instance["sol"] = str(sol)
+
+                json_final[model_config] = json_instance
+
+            with open(parent_directory + "/res/SMT/" + str(instance_number) + ".json", 'w') as file:
+                json.dump(json_final, file, indent=3)
+
+        pass
+    if instance is not None:
+        current_directory = os.getcwd()
+        parent_directory = os.path.dirname(current_directory)
         json_final = {}
+        print("---Solving Instance Number --- : ", instance_number, " with ", model_config, " model---")
 
-        for model_config in configurations:
+        json_instance = {}
+        time = 0
+        optimal = False
+        obj = None
+        sol = []
 
-            print("---Solving Instance Number --- : ", instance_number, " with ", model_config, " model---")
+        time, optimal, obj, sol = solve_smt(model_config, instance_number, time_to_solve)
+        print(f"Time taken ===> {floor(time)}s optimality===> {optimal} objective found ===> {obj}")
+        print(f"Best route found is ====>{str(sol)} <======")
+        json_instance["time"] = floor(time)
+        json_instance["optimal"] = optimal
+        json_instance["obj"] = str(obj)
+        json_instance["sol"] = str(sol)
 
-            json_instance = {}
-            time=0
-            optimal=False
-            obj=None
-            sol=[]
+        json_final[model_config] = json_instance
 
-            time, optimal, obj, sol = solve_smt(model_config, instance_number, time_to_solve)
+    with open(parent_directory + "/res/SMT/" + str(instance_number) + ".json", 'w') as file:
+        json.dump(json_final, file, indent=3)
 
 
-
-
-            print(f"Time taken ===> {floor(time)}s optimality===> {optimal} objective found ===> {obj}")
-            print(f"Best route found is ====>{str(sol)} <======")
-            json_instance["time"] = floor(time)
-            json_instance["optimal"] = optimal
-            json_instance["obj"] = str(obj)
-            json_instance["sol"] = str(sol)
-
-            json_final[model_config] = json_instance
-
-        with open(parent_directory + "/res/SMT/" + str(instance_number) + ".json", 'w') as file:
-            json.dump(json_final, file, indent=3)
-
-    pass
 
 
 if __name__ == "__main__":
-    main()
+
+        parser = argparse.ArgumentParser(description="Parser.")
+        parser.add_argument('--instance', type=int, required=True, help="Instance Number 0 if all")
+        parser.add_argument('--configuration', type=str, required=True, help="Configuration of the model")
+
+        args = parser.parse_args()
+        main(args)

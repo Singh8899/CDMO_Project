@@ -1,26 +1,24 @@
-
-import threading
+import signal
 import time
-class RaisingThread(threading.Thread):
-  def run(self):
-    self._exc = None
-    try:
-      super().run()
-    except Exception as e:
-      self._exc = e
 
-  def join(self, timeout=None):
-    super().join(timeout=timeout)
-    if self._exc:
-      raise self._exc
-def foo():
-  time.sleep(2)
-  print('hi, from foo!')
-  raise Exception('exception from foo')
 
-t = RaisingThread(target=foo)
-t.start()
+def handle_timeout(signum, frame):
+    raise TimeoutError
+
+
+def my_task():
+    for i in range(6):
+        print(f"I am working something long running, step {i}")
+        time.sleep(1)
+
+
+signal.signal(signal. SIGABRT, handle_timeout)
+signal.alarm(5)  # 5 seconds
+
 try:
-  t.join()
-except Exception as e:
-  print(e)
+    my_task()
+except TimeoutError:
+    print("It took too long to finish the job")
+finally:
+    signal.alarm(0)
+

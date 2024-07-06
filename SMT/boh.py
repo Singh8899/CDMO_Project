@@ -6,20 +6,19 @@ from math import floor
 import signal
 
 import threading
-delay_time = 3   # delay time in seconds
-def watchdog():
-  print('Taken too long time, going on next instance/model...')
-  os._exit(1)
+def at_least_one(bool_vars):
+    return Or(bool_vars)
 
-def exactly_one(variables):
-    # At least one of the variables must be true
-    at_least_one = Or(variables)
 
-    # At most one of the variables must be true
-    at_most_one = And(
-        [Implies(variables[i], And([Not(variables[j]) for j in range(len(variables)) if j != i])) for i in
-         range(len(variables))])
+def at_most_one(bool_vars, name):
+    if len(bool_vars) <= 4:
+        return And(And([Not(And(pair[0], pair[1])) for pair in combinations(bool_vars, 2)]))
+    y = Bool(f"y_{name}")
+    return And(And(at_most_one(bool_vars[:3] + [y],name)), And(at_most_one(bool_vars[3:] + [Not(y)], name+"_")))
 
+
+def exactly_one(bool_vars, name):
+    return And(at_most_one(bool_vars, name), at_least_one(bool_vars))
     return And(at_least_one, at_most_one)
 def inputFile(num):
     # Change the working directory to the directory where the script is located
@@ -46,112 +45,121 @@ def inputFile(num):
     return n_couriers, n_items, max_load, size_item, dist
 n_couriers, n_cities, courier_capacity, item_size, D=inputFile(11)
 dimension=(n_cities//n_couriers)+3
-
-
-smt_solver=Optimize()
-
-
-ass= [[Int(f"x_{i}_{j}") for j in range(n_couriers) ]for i in range(dimension)]
-
-weights= [ Int(f"weight_{c}") for c in range(n_couriers)]
-
-distances= [ Int(f"distance_{c}") for c in range(n_couriers)]
-
-n_obj= [Int(f"n_obj_{c}") for c in range(n_couriers)]
-
-max_dist=Int(f"max_dist")
-
-# for courier in range(n_couriers):
-#     smt_solver.add( n_obj[courier] == Sum([If(ass[i][courier] != n_cities+1, 1, 0) for i in range(dimension) ]))
 #
-lower_bound = max([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
+#
+# smt_solver=Optimize()
+#
+# time_start_build=time.time()
+# ass= [[Int(f"x_{i}_{j}") for j in range(n_couriers) ]for i in range(dimension)]
+#
+# weights= [ Int(f"weight_{c}") for c in range(n_couriers)]
+#
+# distances= [ Int(f"distance_{c}") for c in range(n_couriers)]
+#
+#
+#
+# max_dist=Int(f"max_dist")
+#
+# # for courier in range(n_couriers):
+# #     smt_solver.add( n_obj[courier] == Sum([If(ass[i][courier] != n_cities+1, 1, 0) for i in range(dimension) ]))
+# #
+# lower_bound = max([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
+#
+#
+# upper_bound = sum([D[i,i+1] for i in range(0,n_cities)]) + lower_bound
+# for i in range(dimension):
+#     for j in range(n_couriers):
+#         smt_solver.add(ass[i][j]>=1)
+#         smt_solver.add(ass[i][j]<=n_cities+1)
+#
+# for courier in range(n_couriers):
+#     smt_solver.add(ass[1][courier]!=n_cities+1)
+#
+# for courier in range(n_couriers):
+#     smt_solver.add(ass[0][courier] == n_cities+1)
+#     smt_solver.add(ass[-1][courier] == n_cities+1)
+#
+# for courier in range(n_couriers):
+#     for i in range(1,dimension-1):
+#         smt_solver.add(Implies( ass[i][courier]==n_cities+1, ass[i+1][courier]==n_cities+1))
+# for city in range(1,n_cities + 1):
+#             smt_solver.add(exactly_one([ass[i][j] == city for i in range(1,dimension-1) for j in range(n_couriers)],f"city{city}"))
+#
+#
+#
+#
+# for courier in range(n_couriers):
+#     smt_solver.add(weights[courier] == Sum([If(ass[i][courier] == city, item_size[city-1], 0) for i in range(dimension) for city in range(n_cities+1)]))
+#
+# # Now i set the limit weights given the capacity of a courier
+#
+# for courier in range(n_couriers):
+#     smt_solver.add(weights[courier]<=courier_capacity[courier])
+#
+# smt_solver.add(max_dist>=lower_bound)
+# smt_solver.add(max_dist<=upper_bound)
+#
+# #Now i set the distance
+# for courier in range(n_couriers):
+#     smt_solver.add(distances[courier] == Sum(
+#         [If(And(ass[i][courier] == city1, ass[i + 1][courier] == city2), int(D[city1 - 1, city2 - 1]), 0) for i in
+#          range(dimension - 1)
+#          for city1 in range(1, n_cities + 2) for city2 in range(1, n_cities + 2)]))
+#
+# for courier in range(n_couriers):
+#    smt_solver.add(max_dist>=distances[courier])
+#
+#
+#
+#
+#
+#
+#
+# # if smt_solver.check() == sat:
+# #     print(smt_solver.model())
+# # else:
+# #     print("Failed to solve")
+#
+#
+# time_finish_build=time.time()
+# print("sto iniziando: ",time_finish_build-time_start_build,"s")
+# start_time = time.time()
+#
+#
+# smt_solver.minimize(max_dist)
+# result=smt_solver.check()
+#
+# end_time = time.time()
+# print("ha finito")
+# time_taken = end_time - start_time
+#
+# model=smt_solver.model()
+# print(model)
+# print(f"Minimum max distance found is ===>>> : ",{model[max_dist]})
+# print("Total time taken ====>: ",floor(time_taken),"s")
+#
+#
+#
+# def solution_builder(model):
+#     solution=[]
+#     for courier in range(n_couriers):
+#
+#         solution_courier=[]
+#
+#         for j in range(dimension):
+#
+#             if model.evaluate(ass[j][courier] != n_cities+1):
+#
+#                 solution_courier.append(model.evaluate(ass[j][courier]))
+#
+#         solution.append(solution_courier)
+#
+#     return solution
+#
+#
+# print(solution_builder(smt_solver.model()))
 
 
-upper_bound = sum([D[i,i+1] for i in range(0,n_cities)]) + lower_bound
-for i in range(dimension):
-    for j in range(n_couriers):
-        smt_solver.add(ass[i][j]>=1)
-        smt_solver.add(ass[i][j]<=n_cities+1)
 
-for courier in range(n_couriers):
-    smt_solver.add(ass[1][courier]!=n_cities+1)
-
-for courier in range(n_couriers):
-    smt_solver.add(ass[0][courier] == n_cities+1)
-    smt_solver.add(ass[-1][courier] == n_cities+1)
-
-for courier in range(n_couriers):
-    smt_solver.add(weights[courier] == Sum([If(ass[i][courier] == city, item_size[city-1], 0) for i in range(dimension) for city in range(n_cities+1)]))
-
-# Now i set the limit weights given the capacity of a courier
-
-for courier in range(n_couriers):
-    smt_solver.add(weights[courier]<=courier_capacity[courier])
-
-#Now i set the distance
-for courier in range(n_couriers):
-     smt_solver.add( distances[courier] == Sum([If(And(ass[i][courier] == city1,ass[i+1][courier]==city2),int(D[city1-1,city2-1]), 0) for i in range(dimension-1)
-                                                for city1 in range(1,n_cities+2) for city2 in range(1,n_cities+2) ])   )
-for courier in range(n_couriers):
-    for i in range(1,dimension-1):
-        smt_solver.add(Implies( ass[i][courier]==n_cities+1, ass[i+1][courier]==n_cities+1))
-
-for courier in range(n_couriers):
-    smt_solver.add(max_dist>=distances[courier])
-
-
-
-for city in range(1,n_cities + 1):
-            smt_solver.add(exactly_one([ass[i][j] == city for i in range(dimension) for j in range(n_couriers)]))
-
-smt_solver.add(max_dist>=lower_bound)
-smt_solver.add(max_dist<=upper_bound)
-
-
-
-
-
-
-# if smt_solver.check() == sat:
-#     print(smt_solver.model())
-# else:
-#     print("Failed to solve")
-
-
-
-print("sto iniziando")
-start_time = time.time()
-
-
-smt_solver.minimize(max_dist)
-result=smt_solver.check()
-
-end_time = time.time()
-print("ha finito")
-time_taken = end_time - start_time
-
-model=smt_solver.model()
-print(model)
-print(f"Minimum max distance found is ===>>> : ",{model[max_dist]})
-print("Total time taken ====>: ",floor(time_taken),"s")
-
-
-
-def solution_builder(model):
-    solution=[]
-    for courier in range(n_couriers):
-
-        solution_courier=[]
-
-        for j in range(dimension):
-
-            if model.evaluate(ass[j][courier] != n_cities+1):
-
-                solution_courier.append(model.evaluate(ass[j][courier]))
-
-        solution.append(solution_courier)
-
-    return solution
-
-
-print(solution_builder(smt_solver.model()))
+import cvc5
+from cvc5 import Solver, Kind

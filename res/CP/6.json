@@ -1,74 +1,74 @@
 {
    "gecode_standard": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[8, 7], [1, 2], [3], [6], [5], [4]]"
    },
    "gecode_standard_no_heu": {
-      "time": 0,
+      "time": 0.3,
       "optimal": true,
       "obj": 322,
       "sol": "[[3], [4], [6], [5], [7, 2], [8, 1]]"
    },
    "chuffed_standard_no_heu": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[6], [3, 2], [8], [7], [5], [4, 1]]"
    },
    "or-tools_standard_no_heu": {
-      "time": 0,
+      "time": 0.7,
       "optimal": true,
       "obj": 322,
       "sol": "[[8], [7], [6], [5], [3, 4], [1, 2]]"
    },
    "gecode_sym": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[3], [4], [5], [6, 1], [7, 2], [8]]"
    },
    "gecode_sym_no_heu": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[1, 8], [2, 7], [3], [4], [5], [6]]"
    },
    "chuffed_sym_no_heu": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[1], [2, 5], [3, 7], [4], [6], [8]]"
    },
    "or-tools_sym_no_heu": {
-      "time": 0,
+      "time": 0.9,
       "optimal": true,
       "obj": 322,
       "sol": "[[3], [4], [5], [6, 2], [7, 1], [8]]"
    },
    "gecode_optimized": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[2, 3], [4], [5], [6, 1], [7], [8]]"
    },
    "gecode_optimized_no_heu": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[1, 8], [2, 7], [3], [4], [5], [6]]"
    },
    "chuffed_optimized_no_heu": {
-      "time": 0,
+      "time": 0.4,
       "optimal": true,
       "obj": 322,
       "sol": "[[1], [2, 5], [3, 7], [4], [6], [8]]"
    },
    "or-tools_optimized_no_heu": {
-      "time": 1,
+      "time": 0.9,
       "optimal": true,
-      "obj": 324,
-      "sol": "[[2, 8], [3], [4], [5], [6], [7, 1]]"
+      "obj": 322,
+      "sol": "[[3], [4], [5], [6, 2], [7, 1], [8]]"
    }
 }

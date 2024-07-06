@@ -1,72 +1,72 @@
 {
    "gecode_standard": {
-      "time": 1,
-      "optimal": false,
-      "obj": null,
-      "sol": "[]"
+      "time": 16.6,
+      "optimal": true,
+      "obj": 346,
+      "sol": "[[54, 46, 61, 2, 58], [16, 29, 22, 32, 70], [33, 88, 13, 19, 86], [67, 17, 11, 89, 15], [94, 26, 85, 95, 28], [71, 68, 74, 60, 72], [38, 93, 81, 92, 66], [47, 23, 91, 27, 84], [25, 43, 52, 18], [73, 69, 79, 12], [76, 3, 40, 82, 30], [1, 24, 83, 14, 45], [35, 34, 77, 56, 78], [21, 90, 4, 75, 42], [87, 62, 20, 39, 36], [6, 48, 65, 53, 9], [8, 55], [44, 64, 7, 5, 10], [57, 31, 50, 80, 51], [59, 63, 49, 41, 37]]"
    },
    "gecode_standard_no_heu": {
-      "time": 1,
+      "time": 300.8,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "chuffed_standard_no_heu": {
-      "time": 1,
+      "time": 301.8,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "or-tools_standard_no_heu": {
-      "time": 1,
+      "time": 300.9,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "gecode_sym": {
-      "time": 1,
+      "time": 301.0,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "gecode_sym_no_heu": {
-      "time": 1,
+      "time": 301.0,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "chuffed_sym_no_heu": {
-      "time": 1,
+      "time": 301.9,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "or-tools_sym_no_heu": {
-      "time": 1,
+      "time": 301.0,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "gecode_optimized": {
-      "time": 1,
+      "time": 301.6,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "gecode_optimized_no_heu": {
-      "time": 1,
+      "time": 301.6,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "chuffed_optimized_no_heu": {
-      "time": 1,
+      "time": 302.0,
       "optimal": false,
       "obj": null,
       "sol": "[]"
    },
    "or-tools_optimized_no_heu": {
-      "time": 1,
+      "time": 301.1,
       "optimal": false,
       "obj": null,
       "sol": "[]"
