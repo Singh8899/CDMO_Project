@@ -5,7 +5,6 @@ from utils import *
 import time
 from math import floor,log
 
-
 def main(args):
     time_limit = 300
     instance=args.instance
@@ -39,11 +38,9 @@ def main(args):
         for solver in solvers:
             m_TSP.solve(solvers[solver])
             status = m_TSP.status
-            print("status",m_TSP.status)
             if status == 1:    
                 solve_time = 300 if floor(m_TSP.solutionTime) > 300 else floor(m_TSP.solutionTime)
                 opt = (time_limit > solve_time)
-                print([value(i) for i in dis])
                 json_dict[solver] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,value(m_TSP.objective))
             else:
                 json_dict[solver] = jsonizer(x,n_items+1,n_couriers,300,False,-1)
@@ -58,8 +55,6 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
     min_dist = max([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
     low_cour = min([(D[n_cities,i] + D[i,n_cities]) for i in range(0,n_cities)])
     max_dist = min_dist + 2*round(log(sum([D[i,i+1] for i in range(n_obj+1)]))) + low_cour
-    
-    print(low_cour,min_dist,max_dist)
     #We define a 3d matrix of variables x[i][j][c] means that courier c has used node (i,j) to leave city i and reach city j
     x = LpVariable.dicts("x", (range(origin), range(origin), range(n_couriers)), cat="Binary")
     u = LpVariable.dicts("u", (range(n_cities), range(n_couriers)), lowBound=0, upBound=origin-1, cat="Integer")
@@ -94,10 +89,6 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
         for c in range(n_couriers) :
             m_TSP += lpSum(x[i][n_cities][c] for i in range(n_cities)) == 1
 
-    # Ensure that each courier doesnt exceed its max capacity
-    # for c in range(n_couriers) :
-    #     m_TSP += lpSum(x[i][j][c]*item_size[j] for i in range(origin) for j in range(n_cities)) <= courier_capacity[c]
-
     # Ensure that each courier path it's connected
     for j in range(origin):
         for c in range(n_couriers):
@@ -125,8 +116,6 @@ def set_const(n_couriers, n_items, courier_capacity,item_size, D):
             m_TSP += maximum >= d
 
     return m_TSP,x,cour_dist
-
-
 
 def linear_prod(model,binary_var, countinuos_var, ub, name):
     """
@@ -176,6 +165,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parser.")
     parser.add_argument('--instance', type=int, required=True, help="Instance: 0=all, otherwise any intger from 1 to 21")
     parser.add_argument('--config', type=int, required=True, help="Configuration: 0=all, 1=CBC,2=HiGHS")
-
     args = parser.parse_args()
     main(args)

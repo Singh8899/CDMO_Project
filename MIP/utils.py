@@ -29,8 +29,6 @@ def inputFile(num):
 
 def pathFormatter(x,n_cities, n_couriers):
     sol=[]
-    #stamp=[[[value(x[i][j][c]) for j in range(n_cities)]for i in range(n_cities)]for c in range(n_couriers)]
-    #print(stamp)
     for c in range(n_couriers):
         solution_courier=[]
         num_assigned_to_courier =len([1 for i in range(n_cities) for j in range(n_cities) if value(x[i][j][c])>=0.9])
@@ -48,7 +46,6 @@ def pathFormatter(x,n_cities, n_couriers):
     return sol
 
 def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
-    
     if obj < 0:
         return {"time": time, "optimal": optimal, "obj": "N/A", "sol": []}
     else:
@@ -67,5 +64,4 @@ def format_and_store(instance,json_dict):
     # Save the dictionary to a JSON file
     with open(parent_directory+"/res/MIP/" + file_name, 'w') as file:
             json.dump(json_dict, file, indent=3)
-    
     print(f"File saved at {parent_directory+"/res/MIP/" + file_name}")
