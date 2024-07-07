@@ -35,6 +35,7 @@ def main(args):
                     
                 status = s.check()
                 if  status == sat:
+                    print("SAT")
                     model = s.model()
                     x = [[[int(is_true(model[p[k][i][j]]))
                             for j in range(n_items+1)] 
