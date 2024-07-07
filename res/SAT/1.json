@@ -1,6 +1,6 @@
 {
    "standard": {
-      "time": 1,
+      "time": 2,
       "optimal": true,
       "obj": 14,
       "sol": [
@@ -17,7 +17,7 @@
       ]
    },
    "BS": {
-      "time": 1,
+      "time": 2,
       "optimal": true,
       "obj": 14,
       "sol": [
