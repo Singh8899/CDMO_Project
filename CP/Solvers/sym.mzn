@@ -26,7 +26,7 @@ constraint forall(i in C)(
 
 constraint forall(i in I)(
               among(1,next_obj[i,C],I_ext diff {i})
-%               sum( j in C where next_obj[i,j] != i )(1) == 1
+
             )::domain;
             
 
@@ -51,10 +51,6 @@ constraint forall( i in C)(next_obj[last_obj[i],i] == n+1);
 
  constraint symmetry_breaking_constraint(forall(i,j in C where (i>j /\ L[i]==L[j]) ) (      
                                             next_obj[n+1,i] >= next_obj[n+1,j]));
-
-% int:max_obj = n div m + 1;
-% array[C] of var (max_obj-1)..max_obj:n_obj;
-% constraint forall(i in C) ( n_obj[i] == (sum(j in I_ext where  next_obj[j,i]!=j )(1)-1)); 
 
 
 
@@ -111,7 +107,7 @@ solve :: seq_search([
           
              int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
           ] )
-     %:: relax_and_reconstruct(array1d(next_obj),80) 
+  
      :: relax_and_reconstruct(array1d(ass),80) 
      :: restart_luby(n)
   

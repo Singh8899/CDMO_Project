@@ -5,6 +5,7 @@ import time
 from math import floor
 import json
 import argparse
+import os
 
 def at_least_one(bool_vars):
     return Or(bool_vars)
@@ -112,7 +113,7 @@ def build_standard_model(n_couriers, n_cities, courier_capacity, item_size, D,sy
         for courier1, courier2 in zip(range(n_couriers), range(n_couriers)):
             smt_solver.add(Implies(
                 And(weights[courier1] <= courier_capacity[courier2], weights[courier2] <= courier_capacity[courier1]),
-                ass[1][courier1] < ass[2][courier2]))
+                ass[1][courier1] < ass[1][courier2]))
             smt_solver.add(Implies(courier_capacity[courier1] > courier_capacity[courier2],
                                    weights[courier1] >= weights[courier2]))
 
@@ -214,12 +215,17 @@ def solve_smt(model_config, instance_number, time_to_solve):
 #
 
 def main(instance=None,sym=True):
-    instance = args.instance
+    instance_number= args.instance
     model_config = args.configuration
+    n_instances = 21
+    time_to_solve = 300
+    configurations = ["standard", "standard_sym_heu"]
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    parent_directory = os.path.dirname(current_directory)
 
     if instance is None:
         n_instances = 21
-        time_to_solve = 60
+
         configurations = ["standard", "standard_sym_heu"]
         current_directory = os.path.dirname(os.path.abspath(__file__))
         parent_directory = os.path.dirname(current_directory)
@@ -242,8 +248,8 @@ def main(instance=None,sym=True):
                 print(f"Best route found is ====>{str(sol)} <======")
                 json_instance["time"] = floor(time)
                 json_instance["optimal"] = optimal
-                json_instance["obj"] = str(obj)
-                json_instance["sol"] = str(sol)
+                json_instance["obj"] = int(obj)
+                json_instance["sol"] = sol
 
                 json_final[model_config] = json_instance
 
@@ -252,8 +258,7 @@ def main(instance=None,sym=True):
 
         pass
     if instance is not None:
-        current_directory = os.getcwd()
-        parent_directory = os.path.dirname(current_directory)
+
         json_final = {}
         print("---Solving Instance Number --- : ", instance_number, " with ", model_config, " model---")
 
@@ -266,10 +271,11 @@ def main(instance=None,sym=True):
         time, optimal, obj, sol = solve_smt(model_config, instance_number, time_to_solve)
         print(f"Time taken ===> {floor(time)}s optimality===> {optimal} objective found ===> {obj}")
         print(f"Best route found is ====>{str(sol)} <======")
+        
         json_instance["time"] = floor(time)
         json_instance["optimal"] = optimal
-        json_instance["obj"] = str(obj)
-        json_instance["sol"] = str(sol)
+        json_instance["obj"] = int(obj)
+        json_instance["sol"] = sol
 
         json_final[model_config] = json_instance
 

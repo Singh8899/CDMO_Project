@@ -26,7 +26,7 @@ constraint forall(i in C)(
 
 constraint forall(i in I)(
               among(1,next_obj[i,C],I_ext diff {i})
-%               sum( j in C where next_obj[i,j] != i )(1) == 1
+
             )::domain;
             
 
@@ -58,9 +58,6 @@ constraint forall( courier in C) ( forall( i,j in 2..dim-1 where i+1<j /\ ass[i,
                                                               D[ass[j,courier],ass[i+1,courier]] + D[ass[i-1,courier],ass[j,courier]]
                                                               +D[ass[i,courier],ass[j+1,courier]]+D[ass[j-1,courier],ass[i,courier]]));
 
-% int:max_obj = n div m + 1;
-% array[C] of var (max_obj-1)..max_obj:n_obj;
-% constraint forall(i in C) ( n_obj[i] == (sum(j in I_ext where  next_obj[j,i]!=j )(1)-1)); 
 
 
 
@@ -118,9 +115,9 @@ solve :: seq_search([
           
              int_search(ass[dimension,i],dom_w_deg,indomain_random)|i in C
           ] )
-     %:: relax_and_reconstruct(array1d(next_obj),80) 
+  
      :: relax_and_reconstruct(array1d(ass),80) 
-    % :: restart_luby(n)
+
   
       minimize max_cap_dist::domain ;
 

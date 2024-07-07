@@ -2,13 +2,13 @@
    "standard": {
       "time": 0,
       "optimal": false,
-      "obj": "None",
-      "sol": "[]"
+      "obj": None,
+      "sol": []
    },
    "standard_sym_heu": {
       "time": 0,
       "optimal": false,
-      "obj": "None",
-      "sol": "[]"
+      "obj": None,
+      "sol": []
    }
 }

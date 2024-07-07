@@ -5,7 +5,7 @@ import os
 import json
 import time as tm
 import argparse
-from math import floor
+import jsbeautifier
 mzn.warnings.simplefilter("ignore")
 
 
@@ -90,6 +90,10 @@ def res_CP(ass):  # We have a matrix with n_couriers columns, when we get a zero
                 res_courier.append(ass[j, i])
             j += 1
         res.append(res_courier)
+    res = [
+        [int(item) for item in sublist]
+        for sublist in res
+    ]
     return res
 
 
@@ -114,10 +118,12 @@ def main(args):
         print(f"SOLVING STATHISTICS ===> time=>{round(time, 1)} optimal ==>{optimal} objective found ==>{obj} ")
         print(f"best couriers route found ====> {str(sol)}")
         json_instance = {}
-        json_instance["time"] = round(time, 1)
+        if time > 300:
+            time = 300
+        json_instance["time"] = int(time)
         json_instance["optimal"] = optimal
         json_instance["obj"] = obj
-        json_instance["sol"] = str(sol)
+        json_instance["sol"] = [[1,3],[3,444]]
         if solver == "com.google.ortools.sat":
             json_solver["or-tools" + "_" + configuration] = json_instance
         else:
@@ -134,7 +140,7 @@ def main(args):
         parent_directory = os.path.dirname(current_directory)
         solvers = ["gecode","com.google.ortools.sat","chuffed"]
         # Solve for every instance
-        for instance_number in range(14, n_instances + 1):
+        for instance_number in range(1, n_instances + 1):
             json_solver = {}
             # now for every configuration
             for model_config in configurations:
@@ -152,16 +158,19 @@ def main(args):
                         f"SOLVING STATHISTICS ===> time=>{round(time, 1)} optimal ==>{optimal} objective found ==>{obj} ")
                     print(f"best couriers route found ====> {str(sol)}")
                     json_instance = {}
-                    json_instance["time"] = round(time, 1)
+                    if time>300:
+                        time=300
+                    json_instance["time"] = int(time)
                     json_instance["optimal"] = optimal
                     json_instance["obj"] = obj
-                    json_instance["sol"] = str(sol)
+                    json_instance["sol"] = sol
                     if solver == "com.google.ortools.sat":
                         json_solver["or-tools" + "_" + model_config] = json_instance
                     else:
                         json_solver[solver + "_" + model_config] = json_instance
 
             with open(parent_directory + "/res/CP/" + str(instance_number) + ".json", 'w') as file:
+
                 json.dump(json_solver, file, indent=3)
 
 if __name__ == "__main__":
