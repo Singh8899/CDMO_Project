@@ -64,9 +64,7 @@ def build_standard_model(n_couriers, n_cities, courier_capacity, item_size, D,sy
 
     max_dist = Int(f"max_dist")
 
-    # for courier in range(n_couriers):
-    #     smt_solver.add( n_obj[courier] == Sum([If(ass[i][courier] != n_cities+1, 1, 0) for i in range(dimension) ]))
-    #
+
     lower_bound = max([(D[n_cities, i] + D[i, n_cities]) for i in range(0, n_cities)])
 
     upper_bound = sum([D[i, i + 1] for i in range(0, n_cities)]) + lower_bound
@@ -174,46 +172,6 @@ def solve_smt(model_config, instance_number, time_to_solve):
     return time_taken, optimal, smt_solver.model()[max_dist], sol
 
 
-# #
-# smt_solver.set("timeout",60000)
-# #
-# start_time = time.time()
-# #
-# #
-# smt_solver.minimize(max_dist)
-# result=smt_solver.check()
-# #
-# end_time = time.time()
-# #
-# time_taken = end_time - start_time
-# #
-# # result=smt_solver.check()
-# #
-# model=smt_solver.model()
-# print(model)
-# print(f"Minimum max distance found is ===>>> : ",{model[max_dist]})
-# print("Total time taken ====>: ",floor(time_taken),"s")
-# #
-
-
-# def solution_builder(model):
-#     solution = []
-#     for courier in range(n_couriers):
-#
-#         solution_courier = []
-#
-#         for j in range(dimension):
-#
-#             if model.evaluate(ass[j][courier] != n_cities + 1):
-#                 solution_courier.append(model.evaluate(ass[j][courier]))
-#
-#         solution.append(solution_courier)
-#
-#     return solution
-
-
-#
-
 def main(instance=None,sym=True):
     instance_number= args.instance
     model_config = args.configuration
@@ -223,12 +181,9 @@ def main(instance=None,sym=True):
     current_directory = os.path.dirname(os.path.abspath(__file__))
     parent_directory = os.path.dirname(current_directory)
 
-    if instance is None:
-        n_instances = 21
+    if instance == 0:
 
-        configurations = ["standard", "standard_sym_heu"]
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        parent_directory = os.path.dirname(current_directory)
+
         for instance_number in range(1, n_instances + 1):
 
             json_final = {}
@@ -257,32 +212,55 @@ def main(instance=None,sym=True):
                 json.dump(json_final, file, indent=3)
 
         pass
-    if instance is not None:
+    if instance != 0:
+        if model_config != 0:
+            json_final = {}
+            print("---Solving Instance Number --- : ", instance_number, " with ", model_config, " model---")
 
-        json_final = {}
-        print("---Solving Instance Number --- : ", instance_number, " with ", model_config, " model---")
+            json_instance = {}
+            time = 0
+            optimal = False
+            obj = None
+            sol = []
 
-        json_instance = {}
-        time = 0
-        optimal = False
-        obj = None
-        sol = []
+            time, optimal, obj, sol = solve_smt(model_config, instance_number, time_to_solve)
+            print(f"Time taken ===> {floor(time)}s optimality===> {optimal} objective found ===> {obj}")
+            print(f"Best route found is ====>{str(sol)} <======")
 
-        time, optimal, obj, sol = solve_smt(model_config, instance_number, time_to_solve)
-        print(f"Time taken ===> {floor(time)}s optimality===> {optimal} objective found ===> {obj}")
-        print(f"Best route found is ====>{str(sol)} <======")
-        
-        json_instance["time"] = floor(time)
-        json_instance["optimal"] = optimal
-        json_instance["obj"] = int(obj)
-        json_instance["sol"] = sol
+            json_instance["time"] = floor(time)
+            json_instance["optimal"] = optimal
+            json_instance["obj"] = int(obj)
+            json_instance["sol"] = sol
 
-        json_final[model_config] = json_instance
+            json_final[model_config] = json_instance
 
-    with open(parent_directory + "/res/SMT/" + str(instance_number) + ".json", 'w') as file:
-        json.dump(json_final, file, indent=3)
+        with open(parent_directory + "/res/SMT/" + str(instance_number) + ".json", 'w') as file:
+            json.dump(json_final, file, indent=3)
+        if model_config ==0:
+            json_final = {}
 
+            for model_config in configurations:
+                print("---Solving Instance Number --- : ", instance_number, " with ", model_config, " model---")
 
+                json_instance = {}
+                time = 0
+                optimal = False
+                obj = None
+                sol = []
+
+                time, optimal, obj, sol = solve_smt(model_config, instance_number, time_to_solve)
+
+                print(f"Time taken ===> {floor(time)}s optimality===> {optimal} objective found ===> {obj}")
+                print(f"Best route found is ====>{str(sol)} <======")
+                json_instance["time"] = floor(time)
+                json_instance["optimal"] = optimal
+                json_instance["obj"] = int(obj)
+                json_instance["sol"] = sol
+
+                json_final[model_config] = json_instance
+
+            with open(parent_directory + "/res/SMT/" + str(instance_number) + ".json", 'w') as file:
+                json.dump(json_final, file, indent=3)
 
 
 if __name__ == "__main__":

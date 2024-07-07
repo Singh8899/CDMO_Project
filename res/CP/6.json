@@ -54,7 +54,7 @@
       ]
    },
    "or-tools_standard_no_heu": {
-      "time": 0,
+      "time": 1,
       "optimal": true,
       "obj": 322,
       "sol": [
@@ -162,7 +162,7 @@
       ]
    },
    "or-tools_sym_no_heu": {
-      "time": 0,
+      "time": 1,
       "optimal": true,
       "obj": 322,
       "sol": [
@@ -239,6 +239,36 @@
          ],
          [
             8
+         ]
+      ]
+   },
+   "gecode_single": {
+      "time": 0,
+      "optimal": true,
+      "obj": 322,
+      "sol": [
+         [
+            4,
+            6
+         ],
+         [
+            2,
+            3
+         ],
+         [
+            0
+         ],
+         [
+            7,
+            0
+         ],
+         [
+            1,
+            0
+         ],
+         [
+            5,
+            0
          ]
       ]
    }

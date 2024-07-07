@@ -124,19 +124,5 @@
             3
          ]
       ]
-   },
-   "gecode_single": {
-      "time": 300,
-      "optimal": false,
-      "obj": 206,
-      "sol": [
-         [
-            2,
-            0
-         ],
-         [
-            1
-         ]
-      ]
    }
 }
