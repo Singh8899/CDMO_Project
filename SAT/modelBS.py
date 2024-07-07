@@ -20,35 +20,31 @@ def main(instance,cfg):
 
 def binary_search(m,n,D,courier_dist_ub_bool,courier_dist_lb_bool, variables,timeout=time_limit):
 
-    rho, X, D_tot, _ = variables
+    res, X, D_tot, _ = variables
     maxDistBin= int(np.ceil(np.log2(sum( [max(i) for i in D] ))))
     
-    UPPER_BOUND = toInteger(courier_dist_ub_bool)
-    LOWER_BOUND = toInteger(courier_dist_lb_bool)
+    UB = toInteger(courier_dist_ub_bool)
+    LB = toInteger(courier_dist_lb_bool)
     
     s.set('timeout', timeout * 1000)
 
     start_time = time.time()
     iter = 0
     
-    satisfiable = True
+    satisf = True
     optimal = True
-    previousModel = None
+    prevModel = None
     
-    while(satisfiable):
-  
-        if (UPPER_BOUND - LOWER_BOUND) <= 1:
-            satisfiable = False
-        
-        if UPPER_BOUND - LOWER_BOUND == 1:
-            MIDDLE_BOUND = LOWER_BOUND
+    while(satisf):
+        if (UB - LB) <= 1:
+            satisf = False
+        if UB - LB == 1:
+            MB = LB
         else:
-            MIDDLE_BOUND = int(np.ceil((UPPER_BOUND + LOWER_BOUND) / 2))
-            
-        middle_bits = toBinary(MIDDLE_BOUND, maxDistBin, BoolVal) 
-        s.add(lesseq(rho,middle_bits)) 
-        current_time = time.time()
-        past_time = int(current_time - start_time)
+            MB = int(np.ceil((UB + LB) / 2))
+        middle_bits = toBinary(MB, maxDistBin, BoolVal) 
+        s.add(lesseq(res,middle_bits))  
+        past_time = int(time.time() - start_time)
         print(past_time)
         s.set('timeout', (timeout - past_time)*1000)
         status = s.check()
@@ -56,26 +52,25 @@ def binary_search(m,n,D,courier_dist_ub_bool,courier_dist_lb_bool, variables,tim
         if status == sat:
             iter += 1
             model = s.model()
-            previousModel = model
-            dist = toInteger([model.evaluate(rho[b]) for b in range(maxDistBin)])
-            UPPER_BOUND = dist
+            prevModel = model
+            dist = toInteger([model.evaluate(res[b]) for b in range(maxDistBin)])
+            UB = dist
 
         elif status == unsat:
             iter += 1
             s.pop()
             s.push()
-            LOWER_BOUND = MIDDLE_BOUND
+            LB = MB
         
         elif status == unknown:
             if iter == 0:
                 return timeout, False, -1, []
-            satisfiable = False
+            satisf = False
             optimal = False
         
-    current_time = time.time()
-    past_time = current_time - start_time
+    past_time = time.time() - start_time
 
-    model = previousModel
+    model = prevModel
     x = [[[int(is_true(model[X[k][i][j]]))
                             for j in range(n+1)] 
                             for i in range(n+1)] 

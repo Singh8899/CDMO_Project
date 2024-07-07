@@ -15,6 +15,12 @@ def main(args):
     solver = args.solver
     if approach.lower() == "cp":
         modelCP.main(instance,configuration,solver)
+    if approach.lower() == "mip":
+        modelMIP.main(instance,configuration,solver)
+    if approach.lower() == "sat":
+        modelSAT.main(instance,configuration,solver)
+    if approach.lower() == "smt":
+        modelSMT.main(instance,configuration,solver)
 
 
 if __name__ == "__main__":

@@ -27,23 +27,7 @@ def inputFile(num):
 
     dist = np.array([[lines[j][i] for i in range(len(lines[j]))] for j in range(4, len(lines))])
     dist = dist.astype(int)
-    return n_couriers, n_items, max_load, size_item, dist  
-
-def cityPlot(D):
-    plt.figure(figsize=(5, 5))
-    last = D.shape[0]-1
-    for c in range(last):
-        plt.scatter(c+1, D[-1,c],  c='r')
-    plt.scatter(D[-1,-1], D[-1,-1], c='b')
-    plt.grid(True)
-    plt.show()
-
-def routePlot(paths,D):
-    cityPlot(D)
-    for path in paths:
-        plt.plot([path[0]-1,path[1]-1],[D[-1,path[0]-1],D[-1,path[1]-1]])
-    plt.grid(True)
-    plt.show()    
+    return n_couriers, n_items, max_load, size_item, dist
 
 def pathFormatter(x,n_cities, n_couriers):
     sol=[]
@@ -71,8 +55,6 @@ def jsonizer(x,n_cities,n_couriers,time,optimal,obj):
     else:
         return {"time": time, "optimal": optimal, "obj": round(obj), "sol": pathFormatter(x,n_cities, n_couriers)}
     
-
-
 def format_and_store(instance,json_dict):
     # Get the directory of the current script
     current_directory = os.getcwd()
@@ -137,7 +119,6 @@ def greater_eq(vec1, vec2):
     borrow = Or( And(borrow,Not(b1)), And(borrow,b2) , And(b2,Not(b1))  )
     return Not(borrow)
 
-
 def binary_prod(boolVar, num):
     return [And(boolVar,i) for i in num]
 
@@ -189,66 +170,48 @@ def binary_sum(bin_numbers):
     return sum
 
 def lesseq(a, b):
-  constraints = []
-  constraints.append(Or(Not(a[0]),b[0]))
-  for i in range(1,len(a)):
-    constraints.append(Implies(And([a[k] == b[k] for k in range(i)]), Or(Not(a[i]),b[i])))
-  return And(constraints)
+    constraints = []
+    constraints.append(Or(Not(a[0]),b[0]))
+    for i in range(1,len(a)):
+        constraints.append(Implies(And([a[k] == b[k] for k in range(i)]), Or(Not(a[i]),b[i])))
+    return And(constraints)
+
 def toInteger(bool_list):
-  """
-      Decodes a number from binary form
-      :bool_list: a list containing BoolVal variables
-  """
-  binary_string = ''.join('1' if b else '0' for b in bool_list)
-  return int(binary_string, 2)
+    binary_string = ''.join('1' if b else '0' for b in bool_list)
+    return int(binary_string, 2)
 
 def toBinary(num, length = None, dtype = int):
-  """
-      Encodes a number in binary form in the desired type
-      :param num: the int number to convert
-      :param length: the output length
-      :param dtype: the output data type. It supports integers, booleans or z3 booleans
-  """
-  num_bin = bin(num).split("b")[-1]
-  if length:
-      num_bin = "0"*(length - len(num_bin)) + num_bin
-  num_bin = [dtype(int(s)) for s in num_bin]
-  return num_bin
+    num_bin = bin(num).split("b")[-1]
+    if length:
+        num_bin = "0"*(length - len(num_bin)) + num_bin
+    num_bin = [dtype(int(s)) for s in num_bin]
+    return num_bin
 
 def maxim(vec, maxi, name= ""):
-  """
-      The constraints needed to find the maximum number inside a vector
-      :param vec:   list of binary encoded numbers
-      :param maxi:  binary encoded maximum
-      :param name:  name to disambiguate the slack variables
-  """
-  if len(vec) == 1:
-    return equals(vec[0], maxi)
-  elif len(vec) == 2:
-    constr1 = Implies(lesseq(vec[0], vec[1]), equals(vec[1], maxi))
-    constr2 = Implies(Not(lesseq(vec[0], vec[1])), equals(vec[0], maxi))
-    return And(constr1, constr2)
+    if len(vec) == 1:
+        return equals(vec[0], maxi)
+    elif len(vec) == 2:
+        constr1 = Implies(lesseq(vec[0], vec[1]), equals(vec[1], maxi))
+        constr2 = Implies(Not(lesseq(vec[0], vec[1])), equals(vec[0], maxi))
+        return And(constr1, constr2)
   
-  par = [[Bool(f"maxpar_{name}_{i}_{b}") for b in range(len(maxi))] for i in range(len(vec)-2)]
-  constr = []
+    par = [[Bool(f"maxpar_{name}_{i}_{b}") for b in range(len(maxi))] for i in range(len(vec)-2)]
+    constr = []
 
-  constr.append(Implies(lesseq(vec[0], vec[1]), equals(vec[1], par[0])))
-  constr.append(Implies(Not(lesseq(vec[0], vec[1])), equals(vec[0], par[0])))
+    constr.append(Implies(lesseq(vec[0], vec[1]), equals(vec[1], par[0])))
+    constr.append(Implies(Not(lesseq(vec[0], vec[1])), equals(vec[0], par[0])))
 
-  for i in range(1, len(vec)-2):
-    constr.append(Implies(lesseq(vec[i+1], par[i-1]), equals(par[i-1], par[i])))
-    constr.append(Implies(Not(lesseq(vec[i+1], par[i-1])), equals(vec[i+1], par[i])))
+    for i in range(1, len(vec)-2):
+        constr.append(Implies(lesseq(vec[i+1], par[i-1]), equals(par[i-1], par[i])))
+        constr.append(Implies(Not(lesseq(vec[i+1], par[i-1])), equals(vec[i+1], par[i])))
 
-  constr.append(Implies(lesseq(vec[-1], par[-1]), equals(par[-1], maxi)))
-  constr.append(Implies(Not(lesseq(vec[-1], par[-1])), equals(vec[-1], maxi)))
+    constr.append(Implies(lesseq(vec[-1], par[-1]), equals(par[-1], maxi)))
+    constr.append(Implies(Not(lesseq(vec[-1], par[-1])), equals(vec[-1], maxi)))
   
-  return And(constr)
+    return And(constr)
 
 def equals(a, b):
-  """
-      The constraint a == b
-  """
-  return And([a[i] == b[i] for i in range(len(a))])
+    return And([a[i] == b[i] for i in range(len(a))])
 
 def greater_eq(vec1, vec2):
     # Ensure the two vectors have the same length
@@ -266,7 +229,6 @@ def greater_eq(vec1, vec2):
     b2 = vec2[0] 
     borrow = Or( And(borrow,Not(b1)), And(borrow,b2) , And(b2,Not(b1))  )
     return Not(borrow)
-
 
 def binary_prod(boolVar, num):
     return [And(boolVar,i) for i in num]
