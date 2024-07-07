@@ -5,7 +5,6 @@ import os
 import json
 import time as tm
 import argparse
-import jsbeautifier
 mzn.warnings.simplefilter("ignore")
 
 
