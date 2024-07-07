@@ -13,8 +13,6 @@ def main(instance,cfg):
     n_couriers, n_items, courier_capacity,item_size, D_int = inputFile(instance)
     courier_capacity,item_size,D,load_bit,dist_bit,min_dist,low_cour,max_dist = instance_format(n_couriers, n_items,courier_capacity,item_size, D_int)
     maximum, x, cour_dist, weights = set_const(n_couriers, n_items, courier_capacity,item_size, D,load_bit,dist_bit,min_dist,low_cour,max_dist)
-    if cfg == 4:
-        add_sb()
     past_time,optimal,obj,model = binary_search(n_couriers, n_items,D_int,max_dist,min_dist,(maximum, x, cour_dist, weights))
     print(past_time, optimal, obj)
     
@@ -23,17 +21,8 @@ def main(instance,cfg):
                             for i in range(n_items+1)] 
                             for k in range(n_couriers)]
     json_f = jsonizer(x,n_items+1,n_couriers,past_time,optimal,obj)
-    print(json_f)
-    # if maximum != None:
-    #     solve_time = round(time.time() - start_time)
-    #     opt = (time_limit > solve_time)
-    #     json_dict["Z3"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long())
-    #     format_and_store(instance,json_dict)
     return json_f
 
-def add_sb():
-    pass
-        
 def binary_search(m,n,D,courier_dist_ub_bool,courier_dist_lb_bool, variables,timeout=time_limit):
 
     rho, X, D_tot, _ = variables
@@ -94,8 +83,8 @@ def binary_search(m,n,D,courier_dist_ub_bool,courier_dist_lb_bool, variables,tim
     model = previousModel
     xDist = [model.evaluate(bool_vars_to_int(b)).as_long() for b in D_tot]
     obj = max(xDist)
-
     return (int(past_time),optimal,obj,model)
+
 def lesseq(a, b):
   constraints = []
   constraints.append(Or(Not(a[0]),b[0]))

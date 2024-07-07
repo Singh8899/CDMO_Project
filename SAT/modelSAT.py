@@ -9,7 +9,7 @@ time_limit = 300
 def main(args):
     instance=args.instance
     configuration=args.config
-    assert configuration >= 0 and configuration < 5
+    assert configuration >= 0 and configuration < 3
     assert instance >= 0 and instance < 22
     if instance == 0:
         li = 1
@@ -19,21 +19,19 @@ def main(args):
         lu = li+1
     
     if configuration == 0:
-        cfgs = [1,2,3,4]
+        cfgs = [1,2]
     else:
         cfgs = [configuration]
             
     for instance in range(li,lu):
         json_dict = {}
         for cfg in cfgs:
-            if cfg == 1 or cfg == 3:
+            if cfg == 1:
                 start_time = time.time()
                 n_couriers, n_items, courier_capacity,item_size, D = inputFile(instance)
                 courier_capacity,item_size,D,w_bit,d_bit,min_dist,low_cour,max_dist = instance_format(n_couriers, n_items,courier_capacity,item_size, D)
                 s = Optimize()
                 p,maximum = set_const(s, n_couriers, n_items, courier_capacity,item_size, D,w_bit,d_bit,min_dist,low_cour,max_dist)
-                if cfg == 3:
-                    add_sb(s)
                     
                 status = s.check()
                 if  status == sat:
@@ -57,15 +55,10 @@ def main(args):
                     solve_time = 300
                     opt = False
                 
-                if cfg == 1:
-                    json_dict["standard"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long() if type(maximum)!=int else  maximum )
-                else:
-                    json_dict["standard+SB"] = jsonizer(x,n_items+1,n_couriers,solve_time,maximum.as_long() if type(maximum)!=int else  maximum)
-                                
+                json_dict["standard"] = jsonizer(x,n_items+1,n_couriers,solve_time,opt,maximum.as_long() if type(maximum)!=int else maximum)
+          
             if cfg == 2:
                 json_dict["BS"] = modelBS.main(instance,cfg)
-            if cfg == 4:
-                json_dict["BS+SB"] = modelBS.main(instance,cfg)
                 
         format_and_store(instance,json_dict)
 
@@ -183,7 +176,7 @@ def add_sb(s):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parser.")
     parser.add_argument('--instance', type=int, required=True, help="Instance: 0=all, otherwise any intger from 1 to 21")
-    parser.add_argument('--config', type=int, required=True, help="Configuration: 0=all, 1=z3,2=BS, 3=z3+SB, 4=BS+SB")
+    parser.add_argument('--config', type=int, required=True, help="Configuration: 0=all, 1=z3,2=BS")
 
     args = parser.parse_args()
     main(args)
