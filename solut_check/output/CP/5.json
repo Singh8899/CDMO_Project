@@ -1,0 +1,142 @@
+{
+   "gecode_standard": {
+      "time": 300,
+      "optimal": false,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "gecode_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "or-tools_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "chuffed_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "gecode_sym": {
+      "time": 300,
+      "optimal": false,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "gecode_sym_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "or-tools_sym_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "chuffed_sym_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "gecode_optimized": {
+      "time": 0,
+      "optimal": true,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   },
+   "gecode_single": {
+      "time": 300,
+      "optimal": false,
+      "obj": 206,
+      "sol": [
+         [
+            2
+         ],
+         [
+            1,
+            3
+         ]
+      ]
+   }
+}

@@ -56,3 +56,9 @@ docker cp docker_image_id:/CDMO_Project/res project_directory
 Example docker_image_id = 47674d6b939a
         project_directory = C:\Users\singh\Documents\GitHub\CDMO_Project
 ```
+
+# The solution checker folder contains the inputs output just have to run a comand with your local directory
+```bash
+python C:\Users\singh\Documents\GitHub\CDMO_Project\solut_check\Solution_Checker.py C:\Users\singh\Documents\GitHub\CDMO_Project\solut_check\input C:\Users\singh\Documents\GitHub\CDMO_Project\solut_check\output
+```
+the three above are the directory where are present the checker file, the input folder and the output folder

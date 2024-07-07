@@ -1,0 +1,202 @@
+{
+   "gecode_standard": {
+      "time": 300,
+      "optimal": false,
+      "obj": 12,
+      "sol": [
+         [
+            5,
+            4,
+            2
+         ],
+         [
+            7,
+            3
+         ],
+         [
+            6,
+            1
+         ]
+      ]
+   },
+   "gecode_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": [
+         [
+            3,
+            6,
+            5
+         ],
+         [
+            2,
+            4
+         ],
+         [
+            1,
+            7
+         ]
+      ]
+   },
+   "or-tools_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": [
+         [
+            3,
+            6,
+            5
+         ],
+         [
+            2,
+            4
+         ],
+         [
+            1,
+            7
+         ]
+      ]
+   },
+   "chuffed_standard_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": [
+         [
+            3,
+            6,
+            5
+         ],
+         [
+            2,
+            4
+         ],
+         [
+            1,
+            7
+         ]
+      ]
+   },
+   "gecode_sym": {
+      "time": 300,
+      "optimal": false,
+      "obj": 12,
+      "sol": [
+         [
+            5,
+            4,
+            2
+         ],
+         [
+            3,
+            6
+         ],
+         [
+            1,
+            7
+         ]
+      ]
+   },
+   "gecode_sym_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": [
+         [
+            5,
+            4,
+            2
+         ],
+         [
+            3,
+            7
+         ],
+         [
+            1,
+            6
+         ]
+      ]
+   },
+   "or-tools_sym_no_heu": {
+      "time": 1,
+      "optimal": true,
+      "obj": 12,
+      "sol": [
+         [
+            5,
+            4,
+            2
+         ],
+         [
+            3,
+            7
+         ],
+         [
+            1,
+            6
+         ]
+      ]
+   },
+   "chuffed_sym_no_heu": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": [
+         [
+            3,
+            6,
+            5
+         ],
+         [
+            2,
+            4
+         ],
+         [
+            1,
+            7
+         ]
+      ]
+   },
+   "gecode_optimized": {
+      "time": 0,
+      "optimal": true,
+      "obj": 12,
+      "sol": [
+         [
+            3,
+            6,
+            5
+         ],
+         [
+            2,
+            4
+         ],
+         [
+            1,
+            7
+         ]
+      ]
+   },
+   "gecode_single": {
+      "time": 300,
+      "optimal": false,
+      "obj": 12,
+      "sol": [
+         [
+            5,
+            4,
+            2
+         ],
+         [
+            3,
+            7
+         ],
+         [
+            6,
+            1
+         ]
+      ]
+   }
+}
