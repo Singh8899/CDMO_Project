@@ -33,19 +33,26 @@ docker run --td solver
 
 # CP run image
 ```bash
-python All_solver.py --instance 0..21 --approach cp --configuration configurations --solver solvers_type
+python3 All_solver.py --instance 0..21 --approach cp --configuration configurations --solver solvers_type
 ```
 
 # MIP run image
 ```bash
-python All_solver.py --instance 0..21 --approach mip --configuration configurations
+python3 All_solver.py --instance 0..21 --approach mip --configuration configurations
 ```
 # SAT  run image
 ```bash
-python All_solver.py --instance 0..21 --approach sat --configuration configurations
+python3 All_solver.py --instance 0..21 --approach sat --configuration configurations
 ```
 
 # SMT  run image
 ```bash
-python All_solver.py --instance 0..21 --approach smt --configuration configurations
+python3 All_solver.py --instance 0..21 --approach smt --configuration configurations
+```
+
+# TO EXTRACT THE FOLDER WITH THE SOLUTIONS(run in a new CMD prompt)
+```bash
+docker cp docker_image_id:/CDMO_Project/res project_directory
+Example docker_image_id = 47674d6b939a
+        project_directory = C:\Users\singh\Documents\GitHub\CDMO_Project
 ```
