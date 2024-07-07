@@ -1,14 +1,12 @@
 import argparse
 from z3 import *
-from utils import *
+from SAT.utils import *
 from math import floor
 import time
-import modelBS
+import SAT.modelBS as modelBS
 
 time_limit = 300
-def main(args):
-    instance=args.instance
-    configuration=args.config
+def main(instance,configuration):
     assert configuration >= 0 and configuration < 3
     assert instance >= 0 and instance < 22
     if instance == 0:
@@ -175,9 +173,4 @@ def add_sb(s):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Parser.")
-    parser.add_argument('--instance', type=int, required=True, help="Instance: 0=all, otherwise any intger from 1 to 21")
-    parser.add_argument('--config', type=int, required=True, help="Configuration: 0=all, 1=z3,2=BS")
-
-    args = parser.parse_args()
-    main(args)
+    main(instance,configuration)

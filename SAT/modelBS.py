@@ -1,5 +1,5 @@
 from z3 import *
-from utils_BS_model import *
+from SAT.utils_BS_model import *
 from itertools import combinations
 from math import floor
 import time

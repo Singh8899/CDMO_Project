@@ -1,22 +1,18 @@
 import argparse
 from pulp import *
 import numpy as np
-from utils import *
+from MIP.utils import *
 import time
 from math import floor,log
 
-def main(args):
+def main(instance,configuration):
     time_limit = 300
-    instance=args.instance
-    configuration=args.config
-    assert configuration >= 0 and configuration < 3
-    assert args.instance >= 0 and instance < 22
-    if args.config == 0:
+    if configuration == 0:
         solvers = {
                     "CBC":PULP_CBC_CMD(timeLimit=time_limit),
                     "HiGHS":getSolver('HiGHS', timeLimit=time_limit,msg=False)
                 }
-    elif args.config == 1:
+    elif configuration == 1:
         solvers = {
                     "CBC":PULP_CBC_CMD(timeLimit=time_limit)
                 }
@@ -162,8 +158,4 @@ def And(model,a, b, name):
     return delta
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Parser.")
-    parser.add_argument('--instance', type=int, required=True, help="Instance: 0=all, otherwise any intger from 1 to 21")
-    parser.add_argument('--config', type=int, required=True, help="Configuration: 0=all, 1=CBC,2=HiGHS")
-    args = parser.parse_args()
-    main(args)
+    main(instance,configuration)

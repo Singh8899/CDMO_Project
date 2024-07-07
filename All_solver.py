@@ -1,8 +1,7 @@
-import json
-from time import time
 import os
 import numpy as np
 from CP import modelCP
+from MIP.utils import *
 from MIP import modelMIP
 from SAT import modelSAT
 from SMT import modelSMT
@@ -16,11 +15,15 @@ def main(args):
     if approach.lower() == "cp":
         modelCP.main(instance,configuration,solver)
     if approach.lower() == "mip":
-        modelMIP.main(instance,configuration,solver)
+        instance = int(instance)
+        configuration = int(configuration)
+        modelMIP.main(instance,configuration)
     if approach.lower() == "sat":
-        modelSAT.main(instance,configuration,solver)
+        instance = int(instance)
+        configuration = int(configuration)
+        modelSAT.main(instance,configuration)
     if approach.lower() == "smt":
-        modelSMT.main(instance,configuration,solver)
+        modelSMT.main(instance,configuration)
 
 
 if __name__ == "__main__":

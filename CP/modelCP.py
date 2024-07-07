@@ -104,23 +104,13 @@ def res_CP(ass):  # We have a matrix with n_couriers columns, when we get a zero
 
 
 
-def main(args):
-
-    instance=args.instance
-    configuration=args.configuration
-    solver=args.solver
+def main(instance,configuration,solver):
     n_instances = 21
 
     configurations = ["standard", "standard_no_heu", "sym", "sym_no_heu", "optimized","single"]
     current_directory = os.path.dirname(os.path.abspath(__file__))
     parent_directory = os.path.dirname(current_directory)
     solvers = ["gecode", "com.google.ortools.sat", "chuffed"]
-
-
-
-
-
-
     if instance==0:
 
         # Solve for every instance
@@ -158,13 +148,7 @@ def main(args):
                 json.dump(json_solver, file, indent=3)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Parser.")
-    parser.add_argument('--instance', type=int, required=True, help="Instance Number 0 if all")
-    parser.add_argument('--solver', type=str, required=False, help="Solver from gecode, chuffed or ortools")
-    parser.add_argument('--configuration', type=str, required=False, help="Configuration of the model")
-
-    args = parser.parse_args()
-    main(args)
+    main(instance,configuration,solver)
 
 
 
