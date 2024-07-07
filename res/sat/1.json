@@ -1,13 +1,13 @@
 {
-   "standard": {
+   "BS+SB": {
       "time": 2,
       "optimal": true,
       "obj": 14,
       "sol": [
          [
-            1,
+            4,
             3,
-            4
+            1
          ],
          [
             2,
