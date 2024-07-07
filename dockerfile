@@ -1,21 +1,16 @@
+# We use the minizinc image as a base
 FROM minizinc/minizinc:latest
 
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip python3-venv && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# Setting the working directory
+WORKDIR /CDMO_Project
 
-RUN python3 -m venv /opt/venv
+# Coping all the content of this folder into the container
+COPY . .
 
-ENV PATH="/opt/venv/bin:$PATH"
+# Installing python
+RUN apt-get update \
+  && apt-get install -y python3 \
+  && apt-get install -y python3-pip
 
-WORKDIR /app
-
-COPY . /app
-
-RUN pip install --no-cache-dir -r requirements.txt
-RUN mkdir /app/results
-COPY execution.sh /app/execution.sh
-RUN chmod +x /app/execution.sh
-
-ENTRYPOINT ["/app/execution.sh"]
-CMD ["cp"]
+# Install required libraries
+RUN python3 -m pip install -r requirements.txt --break-system-packages
