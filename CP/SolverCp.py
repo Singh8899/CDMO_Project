@@ -36,6 +36,11 @@ def get_model(model_config):
          file_path = os.path.join(script_dir, "Solvers/standard_no_heu.mzn")
 
          model=mzn.Model(file_path)
+     if model_config=="single":
+         file_path = os.path.join(script_dir, "Solvers/single.mzn")
+
+         model=mzn.Model(file_path)
+
 
      return model
 
@@ -105,40 +110,20 @@ def main(args):
     instance=args.instance
     configuration=args.configuration
     solver=args.solver
+    n_instances = 21
 
-    if instance !=0:
-        print(configuration)
-        json_solver = {}
-        current_directory =  os.path.dirname(os.path.abspath(__file__))
-        parent_directory = os.path.dirname(current_directory)
-
-        model = get_model(configuration)
-
-        time, optimal, obj, sol = solve_CP(instance, model, solver)
-        print(f"SOLVING STATHISTICS ===> time=>{round(time, 1)} optimal ==>{optimal} objective found ==>{obj} ")
-        print(f"best couriers route found ====> {str(sol)}")
-        json_instance = {}
-        if time > 300:
-            time = 300
-        json_instance["time"] = int(time)
-        json_instance["optimal"] = optimal
-        json_instance["obj"] = obj
-        json_instance["sol"] = [[1,3],[3,444]]
-        if solver == "com.google.ortools.sat":
-            json_solver["or-tools" + "_" + configuration] = json_instance
-        else:
-            json_solver[solver + "_" + configuration] = json_instance
-        with open(parent_directory + "/res/CP/" + str(instance) + ".json", 'w') as file:
-
-            json.dump(json_solver, file, indent=3)
+    configurations = ["standard", "standard_no_heu", "sym", "sym_no_heu", "optimized","single"]
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    parent_directory = os.path.dirname(current_directory)
+    solvers = ["gecode", "com.google.ortools.sat", "chuffed"]
 
 
-    if instance ==0:
-        n_instances = 21
-        configurations = ["standard", "standard_no_heu", "sym", "sym_no_heu", "optimized"]
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        parent_directory = os.path.dirname(current_directory)
-        solvers = ["gecode","com.google.ortools.sat","chuffed"]
+
+
+
+
+    if instance==0:
+
         # Solve for every instance
         for instance_number in range(1, n_instances + 1):
             json_solver = {}

@@ -1,7 +1,7 @@
 {
    "gecode_standard": {
-      "time": 3,
-      "optimal": true,
+      "time": 300,
+      "optimal": false,
       "obj": 12,
       "sol": [
          [
@@ -80,8 +80,8 @@
       ]
    },
    "gecode_sym": {
-      "time": 3,
-      "optimal": true,
+      "time": 300,
+      "optimal": false,
       "obj": 12,
       "sol": [
          [
@@ -176,6 +176,27 @@
          [
             1,
             7
+         ]
+      ]
+   },
+   "gecode_single": {
+      "time": 300,
+      "optimal": false,
+      "obj": 12,
+      "sol": [
+         [
+            5,
+            4,
+            2
+         ],
+         [
+            3,
+            0
+         ],
+         [
+            6,
+            1,
+            0
          ]
       ]
    }
