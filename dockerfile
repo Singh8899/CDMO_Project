@@ -2,7 +2,7 @@
 FROM minizinc/minizinc:latest
 
 # Setting the working directory
-WORKDIR /CDMO_Project
+WORKDIR ./CDMO_Project
 
 # Coping all the content of this folder into the container
 COPY . .
