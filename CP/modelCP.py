@@ -104,15 +104,12 @@ def res_CP(ass):  # We have a matrix with n_couriers columns, when we get a zero
 
 
 
-def main(args):
+def main(instance,configuration,solver):
     n_instances = 21
     configurations = ["standard", "standard_no_heu", "sym", "sym_no_heu", "optimized","single"]
     current_directory = os.path.dirname(os.path.abspath(__file__))
     parent_directory = os.path.dirname(current_directory)
     solvers = ["gecode", "com.google.ortools.sat", "chuffed"]
-    instance=args.instance
-    configuration=args.configuration
-    solver=args.solver
 
     if instance !=0:
         json_solver={}
@@ -207,7 +204,7 @@ def main(args):
 
                json.dump(json_solver, file, indent=3)
         if configuration !=0 and solver !=0:
-
+            model_config = configuration
             if (solver == "chuffed" or solver == "com.google.ortools.sat") and "_" not in model_config:
                 print("Can't solve the instance with this solver and specific model")
                 return
@@ -235,11 +232,6 @@ def main(args):
         with open(parent_directory + "/res/CP/" + str(instance_number) + ".json", 'w') as file:
 
            json.dump(json_solver, file, indent=3)
-
-
-
-
-
 
     if instance ==0:
 
@@ -278,10 +270,4 @@ def main(args):
                 json.dump(json_solver, file, indent=3)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Parser.")
-    parser.add_argument('--instance', type=int, required=True, help="Instance Number 0 if all")
-    parser.add_argument('--solver', type=str, required=False, help="Solver from gecode, chuffed or ortools")
-    parser.add_argument('--configuration', type=str, required=False, help="Configuration of the model")
-
-    args = parser.parse_args()
-    main(args)
+    main(instance,configuration,solver)
