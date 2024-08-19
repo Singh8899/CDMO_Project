@@ -1,4 +1,12 @@
-# MiniZinc Solver Image
+# Multiple courier satisfaction problem
+## Project description
+This is the 2023/2024 project for Combinatorial Decision Making and Optimization course of University of Bologna.
+Different strategies have been used:
+
+Constraint Programming with MiniZinc with gecode/or-tools/chuffed solvers
+SAT-Solvers with Z3 
+SMT-Solvers with Z3 
+Mixed Integer Programming with Pulp Python library with CBC/Highs solvers
 
 This repository contains a Docker setup for running MiniZinc models across multiple data instances. It uses the official MiniZinc Docker image as a base and includes a script to run the model against all `.dzn` and `.dat` instance files located in the `instances` directory.
 
