@@ -1,6 +1,6 @@
 # Multiple courier satisfaction problem
 ## Project description
-This is the 2023/2024 project for Combinatorial Decision Making and Optimization course of University of Bologna.
+This is the 2023/2024 project for Combinatorial Decision Making and Optimization(CDMO) course of University of Bologna.
 Different strategies have been used:
 
 Constraint Programming with MiniZinc with gecode/or-tools/chuffed solvers
